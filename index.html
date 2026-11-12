@@ -560,11 +560,11 @@ function runExam(){
     const p=partnerOf(w), ctx=(p&&p.no<w.no)?p:null;
     app.innerHTML=`<section class="panel tall">${head(w)}
       <div class="ptn">${ctx
-        ?`<button class="ptx" id="pc" aria-label="상대 문장 다시 듣기"><span class="who">🔊 상대가 말해요</span><span class="pz">${esc(ctx.hz)}</span><span class="pp">${esc(ctx.py)}</span><span class="pk">${esc(ctx.kr)}</span></button>`
+        ?`<button class="ptx" id="pc" aria-label="상대 문장 다시 듣기"><span class="who">🔊 누르면 상대 말이 나와요</span><span class="pz">${esc(ctx.hz)}</span><span class="pp">${esc(ctx.py)}</span><span class="pk">${esc(ctx.kr)}</span></button>`
         :`<div class="ptx"><span class="who">이번 문장</span><span class="me-first">이번에는 내가 먼저 말해요</span></div>`}
         <button class="btn primary nextb" id="nb">다음 →</button>
       </div></section>`;
-    if(ctx){const pcEl=document.getElementById("pc");const play=()=>{speak(ctx.hz);pcEl.classList.add("played");setTimeout(()=>pcEl.classList.remove("played"),700)};pcEl.onclick=play;play()}
+    if(ctx){const pcEl=document.getElementById("pc");const play=()=>{speak(ctx.hz);pcEl.classList.add("played");setTimeout(()=>pcEl.classList.remove("played"),700)};pcEl.onclick=play}
     nb.onclick=()=>{stopAudio();mine(w)};nb.focus({preventScroll:true});
   }
   function mine(w){
@@ -572,7 +572,7 @@ function runExam(){
     app.innerHTML=`<section class="panel tall">${head(w)}
       <div class="tbar"><i id="tb"></i></div>
       <div class="row" style="margin:6px 0 4px"><span class="clock" id="tc">${LIMIT}</span><span class="count" style="margin-left:6px">초</span><span class="spacer"></span><span class="recdot" id="rd" hidden>● 녹음 중</span></div>
-      <div class="ask"><p class="askl">이 문장을 중국어로 말하세요</p><div class="askq">${esc(w.kr)}</div><div class="askhz" lang="zh-CN">${esc(w.hz)}</div></div>
+      <div class="ask"><p class="askl">이 문장을 중국어로 말하세요</p><div class="askq">${esc(w.kr)}</div></div>
       <p class="heard" id="hv"></p>
       <div id="zone" class="zone"><button class="btn primary" id="gs">시작 ▶</button></div>
       <div class="row passrow"><button class="btn" id="ps" ${passes<=0?"disabled":""}>패스 (맨 뒤로)</button></div>
