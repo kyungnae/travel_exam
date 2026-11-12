@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>여행 회화 본시험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* Same sky/seal palette as the practice site; one centered exam column, a red seal marks "this one counts". */
+:root{
+  --bg:#E3F2FC; --paper:#FFFFFF; --ink:#16324A; --soft:#56708A; --line:#C3DDF0;
+  --jade:#1F6FB2; --jade-t:#DDEEFB; --sky1:#BFE3FA; --sky2:#EEF8FE; --seal:#C4362B; --seal-t:#F6DCD9; --gold:#B98A1E; --gold-t:#F7EBCB;
+  --hz:"Noto Serif SC","Songti SC","SimSun",serif;
+  --kr:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1E30; --paper:#16283D; --ink:#E4EEF7; --soft:#93A9BF; --line:#294059;
+    --jade:#7DBDF0; --jade-t:#1C3651; --sky1:#0B1828; --sky2:#132A42; --seal:#E4665B; --seal-t:#3C2220; --gold:#E6BD5E; --gold-t:#3A3019;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1E30; --paper:#16283D; --ink:#E4EEF7; --soft:#93A9BF; --line:#294059;
+  --jade:#7DBDF0; --jade-t:#1C3651; --sky1:#0B1828; --sky2:#132A42; --seal:#E4665B; --seal-t:#3C2220; --gold:#E6BD5E; --gold-t:#3A3019;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(180deg,var(--sky1) 0,var(--sky2) 420px,var(--bg) 100%) fixed;background-color:var(--bg);color:var(--ink);font-family:var(--kr);font-size:17px;line-height:1.55;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 2px 14px}
+header h1{font-size:1.2rem;margin:0;font-weight:400;display:flex;align-items:center;gap:8px;text-wrap:balance}
+.seal{font-family:var(--hz);font-size:.8rem;font-weight:700;color:var(--seal);border:2px solid var(--seal);border-radius:5px;padding:0 6px;transform:rotate(-4deg);display:inline-block;white-space:nowrap}
+.tbtn{border:none;background:none;color:var(--soft);font-size:.85rem;text-decoration:underline;padding:4px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 6px 24px -14px rgba(31,111,178,.35)}
+.lead{margin:0 0 14px;color:var(--soft);font-size:.95rem}
+.title{font-size:1.35rem;margin:0 0 10px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:12px;padding:12px 18px;font-size:1rem}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.35;cursor:default}
+.count{color:var(--soft);font-size:.9rem;font-variant-numeric:tabular-nums}
+.center{text-align:center}
+
+/* entry form */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--soft);min-width:0}
+.form label.full{grid-column:1/-1}
+.form input,.form select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--paper);font-size:1.05rem;color:var(--ink)}
+.rulelist{padding-left:18px;margin:0 0 16px;line-height:1.6}
+.rulelist li{margin-bottom:2px}
+.note{border-radius:12px;padding:10px 14px;font-size:.92rem;margin:0 0 14px}
+.note.warn{background:var(--gold-t);border:1px solid var(--gold)}
+.note.ok{background:var(--jade-t);border:1px solid var(--jade)}
+.note.err{background:var(--seal-t);border:1px solid var(--seal)}
+.who-card{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:1.05rem;margin:0 0 4px}
+.who-card b{font-size:1.25rem}
+
+/* test */
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--jade);transition:width .3s}
+.panel.tall{display:flex;flex-direction:column;min-height:calc(100svh - 150px)}
+.chapbtn{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;margin:20px 0 4px;padding:34px 16px;border:2px solid var(--jade);border-radius:18px;background:var(--jade-t);color:var(--ink)}
+.chapbtn .ci{font-size:3.4rem;line-height:1}
+.chapbtn .cn{font-size:2.2rem;font-weight:700}
+.chapbtn small{color:var(--soft);font-size:.9rem}
+.chapbtn:active{transform:scale(.98)}
+.chtag{display:inline-block;font-size:.8rem;background:var(--jade-t);color:var(--jade);border-radius:999px;padding:1px 9px}
+.clock{font-family:var(--hz);font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.clock.low{color:var(--seal)}
+.tbar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:12px}
+.tbar i{display:block;height:100%;background:var(--jade);transition:width 1s linear}
+.ctx{display:flex;gap:10px;align-items:center;padding:6px 12px;border-radius:10px;background:var(--bg);margin:10px 0 0}
+.ctx>span:last-child{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:12px;min-width:0}
+.ctx b.zh{font-family:var(--hz);font-size:1.25rem}
+.ctx .cp{color:var(--jade);font-size:.95rem}
+.ctx small{color:var(--soft);font-size:.9rem}
+.who{flex:none;font-size:.75rem;color:var(--soft);border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-top:3px;background:var(--paper)}
+.ask{margin-top:auto;padding-top:36px;text-align:center}
+.askl{color:var(--soft);font-size:1rem;margin:0 0 8px}
+.askq{font-size:2.1rem;font-weight:700;line-height:1.4;margin:0;text-wrap:balance}
+.askhz{font-family:var(--hz);font-weight:700;font-size:1.45rem;line-height:1.4;color:var(--jade);margin:8px 0 0;text-wrap:balance}
+.zone{margin-top:auto;padding:18px 0 6px;display:flex;justify-content:center}
+#sd,#gs{width:100%;max-width:260px;padding:11px 20px}
+.mic{display:block;margin:16px auto 6px;width:104px;height:104px;border-radius:50%;border:none;background:var(--jade);color:#fff;font-size:2.6rem;box-shadow:0 8px 20px -10px var(--jade)}
+.mic.on{background:var(--seal);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.micstate{color:var(--soft);font-size:.92rem;margin:4px 0}
+.heard{font-family:var(--hz);font-size:1.15rem;text-align:center;min-height:1.4em;margin:6px 0}
+.passrow{margin-top:8px}
+.good{color:var(--jade);font-weight:700;margin:0 0 8px}
+.bad{color:var(--seal);font-weight:700;margin:0 0 8px}
+.sent{border:2px solid var(--seal);border-radius:6px;padding:14px 16px;margin:12px 0 6px}
+.sent .zh{font-family:var(--hz);font-weight:700;font-size:1.5rem;line-height:1.4;margin:0;text-align:center}
+.sent .p{color:var(--jade);font-size:1rem;margin:4px 0 0;text-align:center}
+.tgrade{border:2px dashed var(--gold);border-radius:12px;padding:12px;background:var(--gold-t)}
+.tgrade p{margin:0 0 8px;font-size:.92rem}
+.selfg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.selfg .btn{display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:var(--paper)}
+.selfg small{font-size:.75rem;color:var(--soft)}
+@media (max-height:720px){
+  .panel.tall{min-height:calc(100svh - 120px);padding:14px 16px}
+  .panel.tall .clock{font-size:1.9rem}
+  .ctx{margin-top:8px;padding:5px 10px}
+  .ctx b.zh{font-size:1.1rem}
+  .ask{padding-top:16px}
+  .askq{font-size:1.4rem}
+  .askhz{font-size:1.15rem;margin-top:4px}
+  .zone{padding:8px 0 0}
+  .mic{width:80px;height:80px;font-size:2rem;margin:6px auto 2px}
+}
+
+/* result */
+.stamp{width:150px;height:150px;margin:6px auto 12px;border:4px solid var(--seal);border-radius:10px;color:var(--seal);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-6deg);font-family:var(--hz)}
+.stamp b{font-size:3.4rem;line-height:1}
+.mean{text-align:center;font-size:1.15rem;margin:2px 0 12px}
+.sheet{border:1.5px solid var(--ink);border-radius:12px;padding:14px 16px;margin:0 0 14px}
+.sheet .stamped{font-size:.82rem;color:var(--soft);font-variant-numeric:tabular-nums}
+.dots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 0}
+.dot{border:1.5px solid var(--line);border-radius:8px;text-align:center;padding:4px 0;font-size:.8rem;font-variant-numeric:tabular-nums}
+.dot b{display:block;font-size:1.1rem}
+.dot.s2{border-color:var(--jade);color:var(--jade)}
+.dot.s1{border-color:var(--gold);color:var(--gold)}
+.dot.s0{border-color:var(--seal);color:var(--seal)}
+details.more{margin:0 0 14px}
+details.more summary{cursor:pointer;color:var(--jade)}
+.results{list-style:none;padding:0;margin:8px 0 0}
+.results li{border-bottom:1px solid var(--line);padding:12px 0}
+.results .k{margin:6px 0 2px;font-size:.95rem}
+.results .zh{font-family:var(--hz);font-size:1.15rem;margin:0}
+.results .zh small{font-family:var(--kr);color:var(--jade);font-size:.85rem}
+.results .heard{text-align:left;font-size:1rem;color:var(--soft);margin:4px 0}
+.results .fb{margin:4px 0 0;font-size:.92rem}
+.badge{font-weight:700;border-radius:8px;padding:1px 9px;font-size:.85rem;border:1.5px solid}
+.badge.s2{color:var(--jade);border-color:var(--jade)}
+.badge.s1{color:var(--gold);border-color:var(--gold)}
+.badge.s0{color:var(--seal);border-color:var(--seal)}
+.conv table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.9rem}
+.conv td{border-bottom:1px solid var(--line);padding:5px 8px}
+.conv tr.hit td{background:var(--jade-t);font-weight:700}
+
+/* teacher */
+.tw{overflow-x:auto;margin:0 0 14px}
+.tt{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums;min-width:420px}
+.tt th,.tt td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
+.tt th{color:var(--soft);font-weight:400;font-size:.8rem;letter-spacing:.03em}
+.tt td.sc{font-weight:700}
+.pin{display:flex;gap:8px}
+.pin input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--paper);font-size:1.1rem;letter-spacing:.3em;color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);width:min(92vw,520px);background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:14px;font-size:.92rem;line-height:1.5;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:10}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+/* 유의사항 화면 */
+.rules-screen{display:flex;flex-direction:column}
+.rulelist.big{padding-left:1.4em;margin:8px 0 28px;line-height:1.7}
+.rulelist.big li{margin-bottom:.9em;padding-left:.3em}
+.rulelist.big li::marker{font-weight:700;color:var(--jade)}
+.rules-screen .row{margin-top:auto}
+
+/* 노트북 큰 화면: 넓고 크게 */
+@media (min-width:900px){
+  body{font-size:20px}
+  .wrap{max-width:1120px;padding-block:24px 48px;padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}
+  header{margin:4px 4px 20px}
+  header h1{font-size:1.6rem}
+  .seal{font-size:1rem}
+  .tbtn{font-size:1rem}
+  .panel{padding:40px 56px;border-radius:22px}
+  .title{font-size:2rem;margin-bottom:14px}
+  .lead{font-size:1.1rem;margin-bottom:20px}
+  .btn{padding:16px 30px;font-size:1.15rem;border-radius:14px}
+  .form{gap:18px;max-width:720px}
+  .form label{font-size:1rem}
+  .form input{padding:16px 18px;font-size:1.3rem}
+  .rules-screen{min-height:calc(100svh - 150px)}
+  .who-card b{font-size:2.1rem}
+  .rulelist.big{font-size:1.45rem;line-height:1.75;margin:20px 0 40px;padding-left:1.6em}
+  .rulelist.big li{margin-bottom:1.1em;padding-left:.5em}
+  .bar{height:8px;margin-bottom:20px}
+  .count{font-size:1.05rem}
+  .chtag{font-size:1rem;padding:2px 12px}
+  .panel.tall{min-height:calc(100svh - 150px)}
+  .chapbtn{padding:48px 24px}
+  .chapbtn .ci{font-size:5rem}
+  .chapbtn .cn{font-size:3.4rem}
+  .chapbtn small{font-size:1.1rem}
+  .clock{font-size:3.6rem}
+  .tbar{height:10px}
+  .ctx{padding:8px 18px;margin-top:16px}
+  .ctx b.zh{font-size:1.55rem}
+  .ctx .cp{font-size:1.15rem}
+  .ctx small{font-size:1.05rem}
+  .askl{font-size:1.2rem}
+  .askq{font-size:3.6rem}
+  .askhz{font-size:2.4rem;margin-top:12px}
+  #sd,#gs{max-width:300px;font-size:1.15rem;padding:12px 24px}
+  .glist li{grid-template-columns:1fr 340px;column-gap:32px;align-items:center;padding:18px 0}
+  .glist li>*{grid-column:1}
+  .glist .seg{grid-column:2;grid-row:1/span 4;margin:0}
+  .glist .seg button{padding:14px 0;font-size:1.15rem}
+  .glist .k{font-size:1.15rem}
+  .glist .zh{font-size:1.7rem}
+  .glist .p{font-size:1.1rem}
+  .sticky{padding:14px 20px}
+  .stamp{width:210px;height:210px;margin:10px auto 22px}
+  .stamp b{font-size:4.8rem}
+  .stamp span{font-size:1.3rem}
+  .sheet{padding:22px 28px}
+  .sheet .stamped{font-size:1rem}
+  .dots{gap:10px}
+  .dot{font-size:1rem;padding:8px 0}
+  .dot b{font-size:1.6rem}
+  .tt{font-size:1rem}
+}
+@media (min-width:900px) and (max-height:720px){
+  .askq{font-size:2.8rem}
+  .askhz{font-size:1.9rem;margin-top:6px}
+  .ctx b.zh{font-size:1.35rem}
+  .clock{font-size:2.6rem}
+}
+/* 대화형: 상대 문장 먼저 */
+.ptn{flex:1;display:flex;flex-direction:column;width:100%;margin:18px 0 4px;padding:20px;border:2px solid var(--line);border-radius:18px;background:var(--bg);color:var(--ink)}
+.ptx{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:none;background:none;color:inherit;text-align:center;padding:12px;border-radius:12px;width:100%}
+button.ptx:hover .who{border-color:var(--jade);color:var(--jade)}
+button.ptx.played .pz{color:var(--jade)}
+.nextb{align-self:flex-end;margin-top:8px}
+.ptn .who{font-size:.9rem;padding:1px 10px;margin:0}
+.ptn .pz{font-family:var(--hz);font-weight:700;font-size:2.2rem;line-height:1.35;text-wrap:balance}
+.ptn .pp{color:var(--jade);font-size:1.15rem}
+.ptn .pk{color:var(--soft);font-size:1.05rem}
+.ptn .me-first{font-size:1.6rem;font-weight:700}
+@media (min-width:900px){
+  .ptn{padding:28px 32px}
+  .ptx{gap:14px}
+  .ptn .who{font-size:1.05rem}
+  .ptn .pz{font-size:3.4rem}
+  .ptn .pp{font-size:1.5rem}
+  .ptn .pk{font-size:1.3rem}
+  .ptn .me-first{font-size:2.2rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* teacher grading sheet */
+.glist{list-style:none;padding:0;margin:0 0 16px;counter-reset:q}
+.glist li{border-bottom:1px solid var(--line);padding:12px 0;display:grid;gap:4px}
+.glist .qn{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.glist .num{font-weight:700;font-variant-numeric:tabular-nums;min-width:2.2em}
+.glist .k{font-size:1rem;margin:0}
+.glist .zh{font-family:var(--hz);font-weight:700;font-size:1.25rem;margin:0}
+.glist .p{color:var(--jade);font-size:.92rem;margin:0}
+.flag{font-size:.75rem;border-radius:6px;padding:0 6px;border:1px solid var(--seal);color:var(--seal)}
+.flag.pass{border-color:var(--gold);color:var(--gold)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.seg button{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 0;font-weight:700;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed="true"].s2{background:var(--jade);border-color:var(--jade);color:var(--paper)}
+.seg button[aria-pressed="true"].s1{background:var(--gold);border-color:var(--gold);color:var(--paper)}
+.seg button[aria-pressed="true"].s0{background:var(--seal);border-color:var(--seal);color:var(--paper)}
+.sticky{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 6px 18px -10px rgba(22,50,74,.4)}
+.del{border:none;background:none;color:var(--seal);font-size:.8rem;padding:2px 4px;text-decoration:underline}
+
+/* ---- 녹음·자동 채점 추가분 ---- */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 6px}
+.role,.gopt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 10px;border:2px solid var(--jade);border-radius:16px;background:var(--jade-t);color:var(--ink);text-align:center}
+.role .ri,.gopt .ri{font-size:2rem;line-height:1}
+.role b,.gopt b{font-size:1.2rem}
+.role small,.gopt small{font-size:.82rem;color:var(--soft);line-height:1.4}
+.gopt small.no{color:var(--seal)}
+.gopt:disabled{opacity:.55;cursor:default;border-color:var(--line);background:var(--bg)}
+.gpick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+.miccheck{border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.mct{margin:0 0 8px;font-size:.92rem}
+.meter{flex:1;height:12px;border-radius:6px;background:var(--line);overflow:hidden;min-width:80px}
+.meter i{display:block;height:100%;width:0;background:var(--jade);transition:width .08s}
+.recdot{color:var(--seal);font-weight:700;font-size:.9rem;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+.heardl{margin:4px 0 0;font-size:.92rem;color:var(--soft)}
+.heardl b{font-family:var(--hz);color:var(--ink);font-weight:500}
+.glist audio{width:100%;max-width:340px;height:36px;margin:4px 0}
+.seg button{display:flex;flex-direction:column;align-items:center;line-height:1.2;padding:7px 2px}
+.seg button small{font-weight:400;font-size:.7rem;color:var(--soft)}
+.seg button[aria-pressed="true"] small{color:inherit}
+.acts{display:flex;gap:4px}
+.fb{margin:2px 0 0;font-size:.9rem}
+@media (min-width:900px){
+  .roles,.gpick{gap:16px}
+  .role,.gopt{padding:24px 16px}
+  .role b,.gopt b{font-size:1.4rem}
+  .role small,.gopt small{font-size:.95rem}
+  .heard{font-size:1.5rem}
+  .glist li .seg{grid-row:1/span 7}
+}
+@media (max-width:600px){
+  .panel{padding:16px 14px}
+  .role,.gopt{padding:12px 8px}
+  .role .ri,.gopt .ri{font-size:1.6rem}
+}
+@media (prefers-reduced-motion:reduce){.recdot{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>✈️ 여행 회화 <span class="seal">本試</span></h1><button class="tbtn" id="tmenu">결과 모아보기</button></header>
+  <main id="app"></main>
+</div>
+<script>
+const ALL=[{"no":1,"ch":"공항","role":"A","star":false,"pic":"🛂","kr":"안녕하세요! 여권 주세요!","hz":"您好！护照！","py":"Nín hǎo! Hùzhào!","words":[["您好","nín hǎo","안녕하세요(존댓말)",["nin","hao"]],["护照","hùzhào","여권",["hu","zhao"]]]},{"no":2,"ch":"공항","role":"B","star":true,"pic":"🛂","kr":"이것은 제 여권입니다.","hz":"这是我的护照。","py":"Zhè shì wǒ de hùzhào.","words":[["这","zhè","이것",["zhe"]],["是","shì","~이다",["shi"]],["我","wǒ","나, 저",["wo"]],["的","de","~의",["de"]],["护照","hùzhào","여권",["hu","zhao"]]]},{"no":3,"ch":"공항","role":"A","star":false,"pic":"❓","kr":"왜 중국에 오셨나요?","hz":"你为什么来中国？","py":"Nǐ wèishénme lái Zhōngguó?","words":[["你","nǐ","너, 당신",["ni"]],["为什么","wèishénme","왜",["wei","shen","me"]],["来","lái","오다",["lai"]],["中国","Zhōngguó","중국",["zhong","guo"]]]},{"no":4,"ch":"공항","role":"B","star":true,"pic":"🧳","kr":"저는 중국에 여행하러 왔습니다.","hz":"我来中国旅游。","py":"Wǒ lái Zhōngguó lǚyóu.","words":[["我","wǒ","나, 저",["wo"]],["来","lái","오다",["lai"]],["中国","Zhōngguó","중국",["zhong","guo"]],["旅游","lǚyóu","여행하다",["lv","you"]]]},{"no":5,"ch":"숙소","role":"A","star":false,"pic":"🏨","kr":"안녕하세요. 어서오세요.","hz":"您好！欢迎光临！","py":"Nín hǎo! Huānyíng guānglín!","words":[["您好","nín hǎo","안녕하세요(존댓말)",["nin","hao"]],["欢迎","huānyíng","환영하다",["huan","ying"]],["光临","guānglín","오시다(왕림하다)",["guang","lin"]]]},{"no":6,"ch":"숙소","role":"B","star":true,"pic":"🛎️","kr":"체크인 하려고 합니다.","hz":"我要办入住。","py":"Wǒ yào bàn rùzhù.","words":[["我","wǒ","나, 저",["wo"]],["要","yào","~하려고 하다",["yao"]],["办","bàn","처리하다, 하다",["ban"]],["入住","rùzhù","체크인(투숙)",["ru","zhu"]]]},{"no":7,"ch":"숙소","role":"A","star":false,"pic":"📋","kr":"예약하셨나요? (=예약 내역 있으세요?)","hz":"您有预订吗？","py":"Nín yǒu yùdìng ma?","words":[["您","nín","당신(존댓말)",["nin"]],["有","yǒu","있다",["you"]],["预订","yùdìng","예약",["yu","ding"]],["吗","ma","~까?(의문)",["ma"]]]},{"no":8,"ch":"숙소","role":"B","star":true,"pic":"✅","kr":"예약했습니다. (=예약 내역 있습니다.)","hz":"我有预订。","py":"Wǒ yǒu yùdìng.","words":[["我","wǒ","나, 저",["wo"]],["有","yǒu","있다",["you"]],["预订","yùdìng","예약",["yu","ding"]]]},{"no":9,"ch":"이동","role":"A","star":false,"pic":"🚕","kr":"안녕하세요. 어디 가시나요?","hz":"您好，您要去哪儿？","py":"Nín hǎo, nín yào qù nǎr?","words":[["您好","nín hǎo","안녕하세요(존댓말)",["nin","hao"]],["您","nín","당신(존댓말)",["nin"]],["要","yào","~하려고 하다",["yao"]],["去","qù","가다",["qu"]],["哪儿","nǎr","어디",["na"]]]},{"no":10,"ch":"이동","role":"B","star":true,"pic":"🚇","kr":"저는 지하철역에 가려고 합니다.","hz":"我要去地铁站。","py":"Wǒ yào qù dìtiězhàn.","words":[["我","wǒ","나, 저",["wo"]],["要","yào","~하려고 하다",["yao"]],["去","qù","가다",["qu"]],["地铁站","dìtiězhàn","지하철역",["di","tie","zhan"]]]},{"no":11,"ch":"이동","role":"B","star":true,"pic":"🛑","kr":"기사님, 여기에 차 세워 주세요.","hz":"师傅，请在这儿停车。","py":"Shīfu, qǐng zài zhèr tíngchē.","words":[["师傅","shīfu","기사님",["shi","fu"]],["请","qǐng","~해 주세요",["qing"]],["在","zài","~에서",["zai"]],["这儿","zhèr","여기",["zhe"]],["停车","tíngchē","차를 세우다",["ting","che"]]]},{"no":12,"ch":"이동","role":"A","star":false,"pic":"👋","kr":"좋아요, 조심히 가세요!","hz":"好的，慢走！","py":"Hǎo de, màn zǒu!","words":[["好的","hǎo de","좋아요, 알겠어요",["hao","de"]],["慢走","màn zǒu","조심히 가세요",["man","zou"]]]},{"no":13,"ch":"카페","role":"A","star":false,"pic":"☕","kr":"안녕하세요! 무엇을 드시겠어요?","hz":"您好！您要喝什么？","py":"Nín hǎo! Nín yào hē shénme?","words":[["您好","nín hǎo","안녕하세요(존댓말)",["nin","hao"]],["您","nín","당신(존댓말)",["nin"]],["要","yào","~하려고 하다",["yao"]],["喝","hē","마시다",["he"]],["什么","shénme","무엇",["shen","me"]]]},{"no":14,"ch":"카페","role":"B","star":true,"pic":"🧊","kr":"중간 사이즈의 아이스 아메리카노 한 잔 주세요.","hz":"我要一杯中杯冰美式。","py":"Wǒ yào yì bēi zhōngbēi bīng měishì.","words":[["我","wǒ","나, 저",["wo"]],["要","yào","원하다, 주세요",["yao"]],["一","yì","하나",["yi"]],["杯","bēi","잔",["bei"]],["中杯","zhōngbēi","중간 사이즈",["zhong","bei"]],["冰","bīng","차가운(아이스)",["bing"]],["美式","měishì","아메리카노",["mei","shi"]]]},{"no":15,"ch":"카페","role":"A","star":false,"pic":"🛒","kr":"좋아요, 더 필요한 게 있으신가요?","hz":"好的，还要别的吗？","py":"Hǎo de, hái yào bié de ma?","words":[["好的","hǎo de","좋아요, 알겠어요",["hao","de"]],["还","hái","더, 또",["hai"]],["要","yào","원하다, 필요하다",["yao"]],["别的","bié de","다른 것",["bie","de"]],["吗","ma","~까?(의문)",["ma"]]]},{"no":16,"ch":"카페","role":"B","star":true,"pic":"🥤","kr":"얼음을 조금 더 넣어주세요.","hz":"请多放一点儿冰。","py":"Qǐng duō fàng yìdiǎnr bīng.","words":[["请","qǐng","~해 주세요",["qing"]],["多","duō","더, 많이",["duo"]],["放","fàng","넣다",["fang"]],["一点儿","yìdiǎnr","조금",["yi","dian"]],["冰","bīng","얼음",["bing"]]]},{"no":17,"ch":"위급상황","role":"A","star":false,"pic":"🩺","kr":"어디가 아프세요?","hz":"您哪里不舒服？","py":"Nín nǎlǐ bù shūfu?","words":[["您","nín","당신(존댓말)",["nin"]],["哪里","nǎlǐ","어디",["na","li"]],["不","bù","~않다",["bu"]],["舒服","shūfu","편안하다",["shu","fu"]]]},{"no":18,"ch":"위급상황","role":"B","star":true,"pic":"🤒","kr":"열이 나요.","hz":"我发烧了。","py":"Wǒ fāshāo le.","words":[["我","wǒ","나, 저",["wo"]],["发烧","fāshāo","열이 나다",["fa","shao"]],["了","le","(변화·완료를 나타냄)",["le"]]]},{"no":19,"ch":"위급상황","role":"A","star":false,"pic":"🏢","kr":"무슨 일로 오셨나요?","hz":"您有什么事吗？","py":"Nín yǒu shénme shì ma?","words":[["您","nín","당신(존댓말)",["nin"]],["有","yǒu","있다",["you"]],["什么","shénme","무슨",["shen","me"]],["事","shì","일",["shi"]],["吗","ma","~까?(의문)",["ma"]]]},{"no":20,"ch":"위급상황","role":"B","star":true,"pic":"😱","kr":"제 여권을 잃어버렸어요.","hz":"我的护照丢了。","py":"Wǒ de hùzhào diū le.","words":[["我","wǒ","나, 저",["wo"]],["的","de","~의",["de"]],["护照","hùzhào","여권",["hu","zhao"]],["丢","diū","잃어버리다",["diu"]],["了","le","(변화·완료를 나타냄)",["le"]]]}];
+const PYT={"a":"啊阿呵吖嗄腌锕","ai":"埃挨哎唉哀皑癌蔼矮艾碍爱隘呆乃奇捱呃嗳嗌噫嫒瑷暧砹锿霭","an":"鞍氨安俺按暗岸胺案厂干广盒谙埯揞犴庵桉铵鹌黯","ang":"肮昂盎仰腌","ao":"凹敖熬翱袄傲奥懊澳棍嚣坳拗嗷噢岙廒遨媪骜獒燠聱螯鏊鳌鏖","ba":"芭捌扒叭吧笆八疤巴拔跋靶把耙坝霸罢爸伯湃茇菝萆捭岜灞杷钯粑鲅魃","bai":"扒白柏百摆佰败拜稗伯啡排派薜捭呗掰擘鞴","ban":"斑班搬扳般颁板版扮拌伴瓣半办绊卑辨彬阪坂豳钣瘢癍舨","bang":"邦帮梆榜膀绑棒磅蚌镑傍谤旁彭蒡浜螃","bao":"苞胞包褒剥薄雹保堡饱宝抱报暴豹鲍爆呆刨炮袍曝瀑勹裒苴葆孢煲鸨褓趵龅","bei":"拔跋杯碑悲卑北辈背贝钡倍狈备惫焙被臂波葡菩孛俾陂邶埤萆蓓呗怫悖碚鹎褙蜚鐾鞴","ben":"奔苯本笨夯体畚坌贲锛","beng":"榜蚌傍崩绷甭泵蹦迸旁抨平俸堋唪嘣甏","bi":"卑被逼鼻比鄙笔彼碧蓖蔽毕毙毖币庇痹闭敝弊必辟壁臂避陛波肥佛拂幅服虑秘泌脾瞥匕仳俾陂陴埤芘荜荸萆薜捭吡哔狴庳愎滗濞弼妣婢媲嬖璧枇檗殍贲畀铋秕馥裨筚箅篦舭襞跛跸髀","bian":"鞭边编贬扁便变卞辨辩辫遍封匾弁苄拚忭汴缏煸砭碥稹窆褊蝙笾鳊","biao":"苞标彪膘表漂剽婊嫖骠杓飑飙飚灬镖镳瘭裱鳔髟鏖","bie":"捌扒拔蔽鳖憋别瘪秘撇蹩","bin":"彬斌濒滨宾摈份傧豳浜缤玢槟殡膑镔髌鬓","bing":"兵冰柄丙秉饼炳病并拼平屏禀冫邴摒枋槟燹","bo":"拔白柏百般剥薄暴爆玻菠播拨钵波博勃搏铂箔伯帛舶脖膊渤泊驳卜簿番佛服募怕拍潘跑魄菩蒲瀑孛亳蕃薜蘖擗啵饽溥艴檗擘礴钹鹁簸趵跛踣鲅","bu":"薄堡捕卜哺补埠不布步簿部怖附埔拊卟溥逋瓿晡钚钸醭鞴","ca":"擦蔡拆嚓礤","cai":"猜裁材才财睬踩采彩菜蔡","can":"餐参蚕残惭惨灿掺孱骖璨粲黪","cang":"苍舱仓沧藏伧臧","cao":"操糙槽曹草澡造艹嘈漕屮螬艚","ce":"厕策侧册测赦栅恻","cen":"参岑涔","ceng":"层蹭僧增曾噌","cha":"插叉茬茶查碴搽察岔差诧接捷刹土斜喳苴荼嚓猹馇汊姹杈楂槎檫锸镲衩","chai":"查差拆柴豺搓侪茈钗瘥虿","chan":"搀掺蝉馋谗缠铲产阐颤单厘苫兔沾冁谄蒇廛忏潺澶孱羼婵嬗骣觇禅镡蟾躔","chang":"昌猖场尝常长偿肠厂敞畅唱倡尚裳倘淌伥鬯苌菖徜怅惝阊娼嫦昶氅鲳","chao":"超抄钞朝嘲潮巢吵炒绰剿怊晁焯耖","che":"拆车扯撤掣彻澈池尺斥宅坼屮砗","chen":"郴臣辰尘晨忱沉陈趁衬称橙堪帘沈填湛枕疹伧谌谶抻嗔宸琛榇肜胂碜眈龀","cheng":"敞撑称城橙成呈乘程惩澄诚承逞骋秤盯净棱盛趟醒丞郢埕噌嵊徵枨柽樘晟塍瞠铖铛裎蛏酲","chi":"茬拆吃痴持匙池迟弛驰耻齿侈尺赤翅斥炽哆离莉蛇她抬提拖喜移治傺郗坻墀芪茌搋叱哧啻嗤彳饬沱媸柢敕胝眙眵鸱瘛褫蚩螭笞篪豉踅踟魑","chong":"充冲虫崇宠茧酮涌盅种重烛僮茺忡憧潼铳舂艟","chou":"抽酬畴踌稠愁筹仇绸瞅丑臭扭俦圳揄帱惆溴妯瘳雠","chu":"初出橱厨躇锄雏滁除楚础储矗搐触处硫柠淑涂畜絮著助祝亍刍怵憷绌杵楮樗褚蜍蹰黜","chua":"撮","chuai":"揣搋啐啜嘬膪踹","chuan":"川穿椽传船喘串掾舛惴遄巛氚钏舡踹","chuang":"疮窗幢床闯创葱囱怆舂","chui":"吹炊捶锤垂椎陲棰槌","chun":"春椿醇唇淳纯蠢莼沌肫朐鹑蝽","chuo":"躇戳绰簇促淖醛荃蔟啜辶辍焯斫趵踔踱龊","ci":"差柴疵茨磁雌辞慈瓷词此刺赐次措司伺兹滋茈呲嵯祠鹚蚝螅粢糍趑","cong":"窗聪葱囱匆从丛偬苁淙骢琮璁枞","cou":"凑簇趣奏揍族蔟楱辏腠","cu":"粗醋簇促戚且趣卒蔟徂猝槭殂酢蹙蹴","cuan":"蹿篡窜蹲攒汆撺爨镩","cui":"察摧崔催脆瘁粹淬翠洒衰体卒萃啐悴璀榱毳隹","cun":"村存寸蹲浚忖皴","cuo":"差摧磋撮搓措挫错昔最厝嵯脞锉矬痤瘥鹾蹉","da":"搭达答瘩打大胆迭塌塔耷哒嗒怛妲沓疸褡笪靼鞑","dai":"大呆歹傣戴带殆代贷袋待逮怠毒隶埭甙呔岱迨逯骀绐玳棣黛","dan":"忱耽担丹单郸掸胆旦氮但惮淡诞弹蛋憾冉石潭蜒詹湛儋萏啖怛澹澶檐殚赕膻眈疸瘅聃箪","dang":"当挡党荡档谠凼菪宕砀铛裆","dao":"刀捣蹈倒岛祷导到稻悼道盗敦受陶刂佻叨啁帱忉惆洮氘焘忑纛","de":"德得的登底地陟锝","dei":"得","deng":"橙澄蹬灯登等瞪凳邓噔嶝戥磴镫簦","di":"逮的堤低滴迪敌笛狄涤翟嫡抵底地蒂第帝弟递缔隶芍勺提蹄逐氐籴诋谛邸坻莜荻啻嘀娣杓柢棣觌胝砥碲睇镝羝骶","dia":"嗲","dian":"颠掂滇碘点典靛垫电佃甸店惦奠淀殿拈涎沾阽坫埝巅玷钿癜癫蜓簟踮","diao":"稠刀碉叼雕凋刁掉吊钓调敦鸟挑跳佻倜莜啁铞铫蜩踔貂鲷","die":"跌爹碟蝶迭谍叠哆涉踢至窒佚垤堞揲喋嗲渫牒瓞褶耋蹀鲽","ding":"灯奠丁盯叮钉顶鼎锭定订汀仃葶啶玎腚碇町铤疔耵酊","diu":"丢铥","dong":"东冬董懂动栋侗恫冻洞桐酮筒垌咚岽峒氡胨胴硐甬鸫","dou":"兜抖斗陡豆逗痘都读投逾蔸钭窦窬蚪篼","du":"都督毒犊独读堵睹赌杜镀肚度渡妒顿土宅芏嘟渎椟橐牍碡蠹竺笃纛髑黩","duan":"端短锻段断缎椴煅簖踹","dui":"堆兑队对敦追槌怼憝碓镦","dun":"墩吨蹲敦顿囤钝盾遁俊沌豚炖砘礅盹镦趸","duo":"揣捶度兑掇哆多夺垛躲朵跺舵剁惰堕隋陀驮杂咄哚沱缍柁棰铎裰酡踱","e":"啊阿隘胺歹蛾峨鹅俄额讹娥恶厄扼遏鄂饿蛤哦邑鬲噩侉谔垩苊莪萼叱呃啐猗庵愕阏屙婀轭曷腭硪锇锷鹗疴颚鳄","ei":"诶","en":"恩蒽摁","er":"而儿耳尔饵洱二贰佴濡迩珥铒鸸鲕","fa":"拔发罚筏伐乏阀法珐泛垡砝","fan":"藩帆番翻樊矾钒繁凡烦反返范贩犯饭泛潘蕃蘩拚幡梵燔畈袢蟠蹯","fang":"坊芳方肪房防妨仿访纺放匚邡彷枋钫舫鲂","fei":"菲非啡飞肥匪诽吠肺废沸费拂裴芾茇狒怫悱淝妃绯榧腓斐扉祓砩镄痱蜚篚翡霏鲱","fen":"扮奔匪芬酚吩氛分纷坟焚汾粉奋份忿愤粪盼偾拚瀵玢棼燔愍鲼鼢","feng":"蚌泛方丰封枫蜂峰锋风疯烽逢冯缝讽奉凤捧俸酆葑唪沣逄砜","fo":"佛","fou":"不否缶","fu":"包哺不沸佛夫敷肤孵扶拂辐幅氟符伏俘服浮涪福袱弗甫抚辅俯釜斧脯腑府腐赴副覆赋复傅付阜父腹负富讣附妇缚咐怀还仅莆市匐凫阝郛芙芾苻茯莩菔拊掊呋幞彳怫溥滏宓艴孚驸绂绋桴赙祓砩黻黼罘稃馥蚨蜉蝠蝮麸趺跗鲋鳆鞴","ga":"噶嘎胳夹咖轧伽尬呷尕尜戛旮钆","gai":"该改概钙盖溉骸核芥咳汽丐陔垓戤赅胲","gan":"干甘杆柑竿肝赶感秆敢赣个捍汗奸乾坩苷尴擀泔淦澉绀橄旰矸疳酐","gang":"肮冈刚钢缸肛纲岗港杠扛抗亢伉戆罡筻","gao":"篙皋高膏羔糕搞镐稿告浩咎睾诰郜蒿藁缟槔槁杲锆","ge":"噶盖哥歌搁戈鸽胳疙割革葛格蛤阁隔铬个各浩菏合假介咯可屹鬲仡哿圪塥嗝纥搿膈砝硌镉袼颌虼舸骼髂","gei":"给","gen":"根跟痕亘茛哏艮","geng":"耕更庚羹埂耿梗颈亢邢硬亘哽赓绠鲠","gong":"杠工攻功恭龚供躬公宫弓巩汞拱贡共虹红磺廾咣珙肱蚣蛩觥","gou":"钩勾沟苟狗垢构购够拘句佝诟岣遘媾缑枸觏彀笱篝鞲","gu":"皋告辜菇咕箍估沽孤姑鼓古蛊骨谷股故顾固雇滑家贾角枯苦嘏诂菰呱哌崮汩梏轱牯牿胍臌毂瞽罟钴锢瓠鸪鹄痼蛄酤觚鲴骰鹘","gua":"刮瓜剐寡挂褂括舌卦诖呱惴栝胍鸹聒","guai":"乖拐怪掴","guan":"串棺关官冠观管馆罐惯灌贯果纶斡倌莞菅掼涫盥鹳矜鳏","guang":"光广逛横恍咣犷潢桄胱","gui":"概瑰规圭硅归龟闺轨鬼诡癸桂柜跪贵刽撅傀祈炔哇洼娃桅匦匮刿隗庋宄妫桧炅晷皈簋蹶觖鲑鳜","gun":"辊滚棍混卷丨衮绲磙鲧","guo":"锅郭国果裹过唬划活涡馘蠃埚掴呙囗帼崞猓椁虢聒蜮蜾蝈","ha":"蛤哈呵虾吓獬铪","hai":"骸孩海氦亥害骇还咳咴嗨胲醢","han":"厂甘感酣憨邯韩含涵寒函喊罕翰撼捍旱憾悍焊汗汉嵌邗菡撖犴阚泔淦澉瀚旰晗焓矸顸颔蚶鼾","hang":"肮夯杭航狠炕吭狼巷行沆绗珩桁颃酐","hao":"皋镐壕嚎豪毫郝好耗号浩貉唬睾蒿薅嗥嚆濠灏妞昊皓颢蚝","he":"格硅哈害呵喝荷菏核禾和何合盒貉阂河涸赫褐鹤贺呼霍揭苛渴洽吓蝎诃劾壑藿哧嗑嗬阖纥曷盍颌蚵翮","hei":"嘿黑嗨","hen":"痕很狠恨掀哏艮","heng":"哼亨横衡恒行訇蘅珩桁","hng":"哼","hong":"港共轰哄烘虹鸿洪宏弘红汪黉訇讧荭蕻薨闳泓洚","hou":"喉侯猴吼厚候后堠後逅瘊篌糇鲎骺","hu":"雇核和呼乎忽瑚壶葫胡蝴狐糊湖弧虎唬护互沪户苦芦戏许羽冱芴唿囫岵猢怙惚汩浒滹琥槲轷胍觳烀煳戽扈祜瓠鹄鹕鹱虍笏醐斛鹘","hua":"敌花哗华猾滑画划化话豁哇找劐侉叱骅桦砉铧稞","huai":"划槐徊怀淮坏坯圳喟踝","huan":"灌欢环桓还缓换患唤痪豢焕涣宦幻皖眩援郇奂垸萑擐圜獾洹浣漶寰逭缳瑗脘锾鲩鬟","huang":"横荒慌黄磺蝗簧皇凰惶煌晃幌恍谎芒茫隍徨湟潢遑璜肓癀蟥篁鳇","hui":"虫堕徊涣灰挥辉徽恢蛔回毁悔慧卉惠晦贿秽会烩汇讳诲绘溃诙茴荟蕙咴哕喙隳洄浍彗缋珲桧晖恚眭睢皓虺蟪麾","hun":"棍荤昏婚魂浑混昆捆诨馄阍溷珲","huo":"扮呵和化豁活伙火获或惑霍货祸越劐壑藿攉嚯夥灬砉钬锪镬瓠耠蠖","ji":"疵革隔给击圾基机畸稽积箕肌饥迹激讥鸡姬绩缉吉极棘辑籍集及急疾汲即嫉级挤几脊己蓟技冀季伎祭剂悸济寄寂计记既忌际妓继纪秸洁藉居蜡期其棋奇齐系揖倚丌亟乩厝剞佶偈脔诘郅墼芨芰荠萁蒺蕺掎卟叽咭哜唧岌嵴猗洎彐屐骥畿玑楫殛戟戢赍觊犄齑矶睽羁嵇稷瘠瘵虮笈笄粢暨跻跽霁瞿鲚鲫髻麂","jia":"嘉枷夹佳家加荚颊贾甲钾假稼价架驾嫁咖揩茄暇夏挟押嘏伽郏葭拮呷岬浃迦珈柙戛挈胛恝铗镓痂瘕袷蛱笳袈跏骱","jian":"喊歼监坚尖笺间煎兼肩艰奸缄茧检柬碱硷拣捡简俭剪减荐槛鉴践贱见键箭件健舰剑饯渐溅涧建沮前浅咸僭谏谫茛菅蒹搛囝犴湔蹇謇孱缣枧楗戋戬牮犍毽腱睑锏鹣裥笕箴翦趼踺鲣鞯","jiang":"虹僵姜将浆江疆蒋桨奖讲匠酱降强茳洚绛缰犟礓耩糨豇","jiao":"激蕉椒礁焦胶交郊浇骄娇嚼搅铰矫侥脚狡角饺缴绞剿教酵轿较叫窖觉校妖咬佼僬艽茭菽挢叽噍峤徼湫姣敫爝皎鹪蛟醮跤鲛","jie":"差担概亥圾籍家假价揭接皆秸街阶截劫节桔杰捷睫竭洁结解姐戒藉芥界借介疥诫届楷渴契拾她祖偕偈讦诘卩苴拮唧喈嗟獬婕孑桀砝碣疖袷颉蚧羯暨鲒骱髻","jin":"巾筋斤金今津襟紧锦仅谨进靳晋禁近烬浸尽劲肋吟湛卺荩堇噤馑廑妗缙瑾槿赆觐钅衿矜","jing":"劲荆兢茎睛晶鲸京惊精粳经井警景颈静境敬镜径痉靖竟竞净青氏醒刭儆阱菁獍憬泾迳弪婧檠晟肼胫腈旌蜻箐靓","jiong":"炯窘坷冂垧迥炅扃","jiu":"愁揪究纠玖韭久灸九酒厩救旧臼舅咎就疚僦啾噍阄湫柩桕鸠鹫蝤赳蹴鬏","ju":"车仇告拱柜桔姐鞠拘狙疽居驹菊局咀矩举沮聚拒据巨具距踞锯俱句惧炬剧且蛆屈渠娶租足佝倨讵鄹苣苴莒菹蘧掬遽屦鬻琚枸椐榘榉橘犋飓钜锔窭裾趄醵踽龃雎瞿鞫","juan":"捐鹃娟倦眷卷绢圈蕊身眩甄鄄擐狷泫涓桊睃蠲锩镌蜷隽","jue":"嚼脚角撅攫抉掘倔爵觉决诀绝狂屈蛙穴乙厥劂谲矍蕨蕞嗟噘噱崛獗孓珏柽梏桷橛觳爝镢蠼蹶觖","jun":"龟卷均菌钧军君峻俊竣浚郡骏旬匀訇捃狻睃皲筠隽麇","ka":"喀咖卡咯佧咔胩","kai":"喝核开揩楷凯慨渴岂剀劾垲蒈忾恺溘铠锎锴雉","kan":"喊槛刊堪勘坎砍看嵌侃凵莰阚戡龛瞰","kang":"奋杭荒康慷糠扛抗亢炕坑伉闶沆钪","kao":"搞考拷烤靠尻栲槁犒铐","ke":"呵喀坷苛柯棵磕颗科壳咳可渴克刻客课嗑岢恪溘骒缂珂轲氪碣瞌盍钶锞稞疴窠颏蚵蝌髁","kei":"刻","ken":"狠肯啃垦恳垠裉龈","keng":"坑吭忐硎铿","kong":"空恐孔控腔倥崆穹箜","kou":"抠口扣寇挎刳佝芤蔻叩彀眍筘","ku":"古掘枯哭窟苦酷库裤挎跨圣刳堀喾绔骷","kua":"夸垮挎跨胯侉髁","kuai":"会块筷侩快魁傀蒯郐哙狯浍脍","kuan":"棵宽款完髋","kuang":"呈逛磺匡筐狂框矿眶旷况枉兄诓诳邝圹夼哐湟纩贶","kui":"踩亏盔岿窥葵奎魁傀馈愧溃缺馗匮夔隗蒉揆喹喟悝愦逵暌睽聩蝰篑臾跬觖","kun":"混坤昆捆困卵悃阃琨锟醌鲲髡","kuo":"括扩廓阔适栝蛞","la":"垃拉喇蜡腊辣啦蓝落剌摺邋旯砬瘌","lai":"莱来赖崃徕涞濑赉睐铼癞籁黧","lan":"郴蓝婪栏拦篮阑兰澜谰揽览懒缆烂滥啉岚懔漤榄斓罱镧褴","lang":"羹琅榔狼廊郎朗浪莨蒗啷阆锒稂螂踉","lao":"捞劳牢老佬姥酪烙涝撩僚潦落络蓼唠崂獠栳铑铹痨耢醪","le":"勒乐肋了仂叻嘞泐鳓","lei":"勒雷镭蕾磊累儡垒擂肋类泪羸诔嘞漯嫘缧檑耒酹","len":"啉","leng":"棱楞冷塄愣","li":"厘梨犁黎篱狸离漓理李里鲤礼莉荔吏栗丽厉励砾历利傈例俐痢立粒沥隶力璃哩列泣位鬲仂俪俚郦坜苈莅蓠藜捩叻呖唳喱猁悝溧澧逦娌嫠骊缡珞枥栎轹戾砺砬硌詈罹锂鹂疠疬蛎蜊蠡笠篥粝翮醴跞雳霾鲡鳢黧","lia":"俩","lian":"联莲连镰廉怜涟帘敛脸链恋炼练零令羸苓蔹奁搛潋濂琏楝殓臁膦瞵裢裣蠊鲢","liang":"惊俩粮凉梁粱良两辆量晾亮谅墚莨椋踉靓魉","liao":"佬撩聊僚疗燎寥辽潦了撂镣廖料蓼尥嘹獠寮缭钌鹩","lie":"膊累栗例列裂烈劣猎冽埒捩咧洌邋趔躐鬣","lin":"琳林磷霖临邻鳞淋凛赁吝拎任蔺啉嶙廪懔遴檩辚膦瞵粼躏麟","ling":"棱冷怜磷拎玲菱零龄铃伶羚凌灵陵岭领另令酃苓呤囹泠绫柃棂瓴聆蛉翎鲮","liu":"泵聊溜琉榴硫馏留刘瘤流柳六碌陆游蓼泖浏遛骝绺旒熘硐锍镏鹨鎏","lo":"咯","long":"龙聋咙笼窿隆垄拢陇弄垅茏泷珑栊胧砻癃","lou":"牢楼娄搂篓漏陋露偻蒌喽嵝镂瘘耧蝼髅","lu":"谷角酪六芦卢颅庐炉掳卤虏鲁麓碌露路赂鹿潞禄录陆戮绿垆蓼撸噜泸渌漉逯璐栌橹轳辂辘氇胪镥鸬鹭瘳簏舻鲈","luan":"峦挛孪滦卵乱脔娈栾鸾銮","lun":"抡轮伦仑沦纶论囵","luo":"格果咯酪烙碌路萝螺罗逻锣箩骡裸落洛骆络倮蠃荦捋摞猓猡泺漯珞椤橐脶硌镙瘰袼蜾蠡跞雒","lv":"累鹿驴吕铝侣旅履屡缕虑氯律率滤绿偻捋闾榈膂稆褛","lve":"率掠略锊","m":"呒唔","ma":"貉妈麻玛码蚂马骂嘛吗么靡摩抹唛犸嬷杩蟆貊麽","mai":"哩埋买麦卖迈脉派劢荬咪唛霾","man":"埋瞒馒蛮满蔓曼慢漫谩幕墁幔缦熳镘颟螨鳗鞔","mang":"芒茫盲氓忙莽邙瞢漭朦硭蟒","mao":"耗猫茅锚毛矛铆卯茂冒帽貌贸描牟侔袤勖茆峁泖瑁昴牦耄旄懋瞀蛑蝥蟊髦","me":"么没末麽","mei":"玫枚梅酶霉煤没眉媒镁每美昧寐妹媚糜谜墨某味坶莓嵋猸浼湄楣镅鹛袂魅","men":"门闷们扪汶焖懑钔鞔","meng":"氓萌蒙檬盟锰猛梦孟明勐甍瞢懵朦礞瞑虻蜢蟒蟊蠓艋艨黾","mi":"辟眯醚靡糜迷谜弥米秘觅泌蜜密幂摩芈冖谧蘼咪嘧猕汨溟宓弭幺脒祢敉糸縻麋","mian":"棉眠绵冕免勉娩缅面冥沔泯渑湎宀腼眄瞑黾","miao":"吵猫苗描瞄藐秒渺庙妙喵邈缈缪杪淼眇鹋蜱","mie":"蔑灭乜咩咪蠛篾","min":"眠民抿皿敏悯闽苠岷闵汶泯缗玟珉愍黾鳘","ming":"萌盟皿明螟鸣铭名命冥茗溟暝瞑酩","miu":"谬缪","mo":"百佰伯貉嘿脉冒貌么没昧藐摸摹蘑模膜磨摩魔抹末莫墨默沫漠寞陌帕袜万无勿谟茉蓦馍嫫嬷殁镆秣瘼耱蟆貊貘麽","mou":"件谋牟某毋侔袤厶哞婺缪眸蛑鍪","mu":"嘿姥模莫牟拇牡亩姆母墓暮幕募慕木目睦牧穆仫坶苜沐婺毪钼","n":"哏哽唔嗯","na":"拿哪呐钠那娜纳南内絮捺呶肭镎衲箬","nai":"哪那氖乃奶耐奈能鼐佴艿萘柰","nan":"南男难冉喃囝囡楠腩罱蝻赧","nang":"囊攮囔馕曩","nao":"挠脑恼闹淖孬垴呶猱瑙硇铙蛲","ne":"哪呐那呢讷疒疔","nei":"哪那馁内","nen":"嫩枘恁","neng":"而耐能","ng":"哽唔嗯","ni":"呢妮霓倪泥尼拟你匿腻逆溺伲坭嶷猊怩昵旎祢慝睨铌鲵","nian":"趁蔫拈年碾撵捻念粘辗廿埝辇黏鲇鲶","niang":"娘酿","niao":"溺鸟尿茑尥嬲脲袅","nie":"哪倪泥捻捏聂孽啮镊镍涅幸乜陧埝蘖嗫囡颞臬蹑","nin":"您恁","ning":"冰泥年柠狞凝宁拧泞攘疑佞咛甯聍","niu":"牛扭钮纽拗狃忸妞蚴","nong":"脓浓农弄侬咔哝","nou":"耨","nu":"仅奴努怒褥呶帑弩胬孥驽肭","nuan":"暖濡暧","nuo":"掉哪呐那娜挪懦糯诺需傩搦喏濡锘","nv":"女絮狃胬恧钕衄","nve":"虐疟","o":"哦喔噢","ou":"欧鸥殴藕呕偶沤区握遇讴怄渥瓯耦","pa":"芭扒叭吧把耙啪趴爬帕怕琶派葩杷钯筢","pai":"啡拍排牌徘湃派脾迫俳蒎哌","pan":"扳般拌伴半卞番繁攀潘盘磐盼畔判叛胖片彦鄱弁拚爿泮皤袢襻蟠蹒","pang":"榜膀磅傍方房仿逢乓庞旁耪胖彭蒡彷滂逄螃","pao":"苞胞包抱抛咆刨炮袍跑泡匏狍庖脬疱趵","pei":"倍啡肺坏呸胚培裴赔陪配佩沛茇掊辔帔淠艴妃旆锫蜚醅霈","pen":"吩汾喷盆湓","peng":"榜傍逢亨旁砰抨烹澎彭蓬棚硼篷膨朋鹏捧碰苹庄堋嘭怦滂蟛","pi":"蚌卑被比庇辟番否拂副坏培坯砒霹批披劈琵毗啤脾疲皮匹痞僻屁譬扑丕仳俾陂陴邳郫鄱圮埤鼙芘苤萆蕃薜擗吡噼帔庀庳淠濞媲纰枇甓睥罴铍痦癖裨疋蚍蜱篦貔","pian":"扁便辨篇偏片骗平谝骈缏犏胼褊蝙翩蹁","piao":"膘飘漂瓢票朴剽莩嘌嫖骠缥殍瞟螵髟","pie":"蔽撇瞥丿苤氕","pin":"泵拼频贫品聘匕拚姘娉嫔榀牝颦","ping":"秤冯砰聘乒坪苹萍平凭瓶评屏俜堋娉枰鲆","po":"霸膊泊番繁坡泼颇婆破魄迫粕剖朴叵陂鄱泺溥珀钋钷皤笸跛","pou":"抱部涪培剖裒掊瓿踣","pu":"剥堡暴卜扶甫脯扑铺仆莆葡菩蒲埔朴圃普浦谱曝瀑匍苻噗溥濮璞攴氆攵镤镨蹼","qi":"甭吃刺抵逗畸稽缉己技伎揭期欺栖戚妻七凄漆柒沏其棋奇歧畦崎脐齐旗祈祁骑起岂乞企启契砌器气迄弃汽泣讫切勤示宿溪枝支吱丌亟亓俟偈圻芑芪荠萁萋葺蕲嘁屺岐忮忾汔淇骐绮琪琦杞桤槭耆挈欹祺恝憩碛颀蛴蜞綦綮趿蹊鳍麒","qia":"卡客掐恰洽葜咭挈疴袷髂","qian":"柑赶筋牵扦钎铅千迁签仟谦乾黔钱钳前潜遣浅谴堑嵌欠歉纤寨倩佥阡凵芊芡茜荨掮撖岍忏悭慊涔湔骞搴褰缱椠犍肷腱愆钤虔箝","qiang":"将控枪呛腔羌墙蔷强抢哐丬爿戕嫱樯戗炝锖锵镪襁蜣箐羟跫跄","qiao":"愁搞蕉焦壳橇锹敲悄桥瞧乔侨巧鞘撬翘峭俏窍雀捎硝削校招劁诮谯荞茭峤愀憔缲樵毳敫硗醮跷跤鞒","qie":"捷漆沏契砌切茄且怯窃伽郄蕺唼喋惬慊渫妾婕挈脞锲箧趄","qin":"浸钦侵亲秦琴勤芹擒禽寝沁芩堇蓁揿吣嗪噙廑溱槿檎锓衿矜覃螓衾","qing":"精亲青轻氢倾卿清擎晴氰情顷请庆声胜倩苘圊檠磬蜻罄箐綮謦鲭黥","qiong":"鞠琼穷邛芎茕穹蛩筇跫銎","qiu":"仇龟秋丘邱球求囚酋泅团馗俅氽邺巯艽犰惆愀湫逑遒楸赇虬蚯蝤裘糗鳅鼽","qu":"鞠巨句蜡趋区蛆曲躯屈驱渠取娶龋趣去戌诎劬苣蕖蘧岖衢阒遽璩枸觑氍朐祛磲鸲癯蛐蠼麴瞿鞫黢","quan":"串卷圈颧权醛泉全痊拳犬券劝栓拴诠圳荃犭獾悛绻桊辁畎铨蜷筌鬈","que":"猎屈缺炔瘸却鹊榷确雀芍攉阕阙觳悫舄","qun":"蹲遁裙群逡麇","ran":"然燃冉染苒蚺髯","rang":"瓤壤攘嚷让禳穰","rao":"饶扰绕荛娆桡","re":"惹热若偌喏","ren":"儿壬仁人忍韧任认刃妊纫亻仞荏葚饪轫恁稔衽","reng":"耳扔仍戎艿穰","ri":"日","rong":"隔戎茸蓉荣融熔溶容绒冗嵘狨榕肜蝾","rou":"揉柔肉糅蹂鞣","ru":"女肉茹蠕儒孺如辱乳汝入褥需月蓐薷嚅洳溽濡缛铷襦颥","ruan":"软阮需濡朊","rui":"兑内蕊瑞锐芮蕤枘睿蚋","run":"闰润","ruo":"溺惹若弱偌芮箬","sa":"蔡撒洒萨卅仨檫挲脎飒趿","sai":"腮鳃塞赛思噻","san":"三叁伞散馓毵糁霰","sang":"桑嗓丧搡磉颡","sao":"搔骚扫嫂梢哨燥埽缫缲臊瘙鳋","se":"泣塞瑟色涩寨啬槭铯穑","sen":"洒森","seng":"僧","sha":"哈接莎砂杀刹沙纱傻啥煞杉厦噎唼嗄挲歃铩痧裟霎鲨","shai":"色筛晒酾","shan":"掺单掸邓珊苫杉山删煽衫闪陕擅赡膳善汕扇缮檀栅剡儋讪鄯埏芟彡潸澹姗嬗骟膻禅钐疝蟮舢跚鳝髟","shang":"墒伤商赏晌上尚裳汤垧绱殇熵觞","shao":"鞘梢捎稍烧芍勺韶少哨邵绍搜削招召劭苕溲潲杓裢蛸笤筲艄","she":"碟睫奢赊蛇舌舍赦摄射慑涉社设拾邪折厍佘揲猞滠歙畲蛞麝","shei":"谁","shen":"参砷申呻伸身深娠绅神沈审婶甚肾慎渗什信湛震诜谂莘葚抻吲哂渖椹胂矧蜃糁","sheng":"乘甸声生甥牲升绳省盛剩胜圣姓丞冼垩嵊渑晟媵眚笙","shi":"匙堤郝赫舍师失狮施湿诗尸虱十石拾时什食蚀实识史矢使屎驶始式示士世柿事拭誓逝势是嗜噬适仕侍释饰氏市恃室视试斯寺似提嘘液肢汁殖峙谥埘莳蓍弑唑饣彖轼耆贳挈炻礻铈螫舐筮豉酾豕鲥鲺","shou":"收手首守寿授售受瘦兽熟扌狩绶艏","shu":"除娶售蔬枢梳殊抒输叔舒淑疏书赎孰熟薯暑曙署蜀黍鼠属术述树束戍竖墅庶数漱恕嗽透野俞豫朱倏塾荼菽揄摅沭涑澍姝纾杼毹腧殳秫疋","shua":"刷耍唆唰涮","shuai":"率摔衰甩帅蟀","shuan":"汕栓拴闩涮踹","shuang":"霜双爽泷淙孀","shui":"谁水睡税说氵","shun":"盾俊吮瞬顺舜巡恂巛","shuo":"勺数说硕朔烁嗽溯蒴搠嗍濯妁杓槊铄","si":"厕食斯撕嘶思私司丝死肆寺嗣四伺似饲巳台析已以肄厮俟兕厶菥咝徙汜泗澌姒驷纟缌祀祠锶雉鸶耜蛳笥糸","song":"松耸怂颂送宋讼诵凇菘崧嵩忪悚淞竦","sou":"搜艘擞嗽族叟薮嗖嗾馊涑溲敕飕瞍锼螋","su":"搬苏酥俗素速粟僳塑溯宿诉肃缩夙谡蔌蓿嗖嗉愫涑簌觫稣","suan":"酸蒜算撰狻","sui":"粹尿莎虽隋随绥髓碎岁穗遂隧祟蓑谇荽濉邃彗燧眭睢","sun":"餐孙损笋荪狲飧榫跣隼","suo":"抄霍莎沙衰蓑梭唆缩琐索锁所些唢嗦嗍逡娑桫挲睃羧","ta":"搭达哈塌他它她塔獭挞蹋踏太拓嗒闼溻漯遢榻沓铊趿鳎","tai":"大能胎苔抬台泰酞太态汰邰薹呔骀肽炱钛跆鲐","tan":"胆但淡弹沈坍摊贪瘫滩坛檀痰潭谭谈坦毯袒碳探叹炭舔炎湛郯蕈澹昙忐钽锬镡覃","tang":"汤塘搪堂棠膛唐糖倘躺淌趟烫傥帑饧惝溏瑭樘铴镗耥螗螳羰醣","tao":"掏涛滔绦萄桃逃淘陶讨套挑跳姚鼗叨啕洮韬焘饕","te":"匿式特忒忑慝铽","tei":"忒","teng":"藤腾疼誊滕","ti":"达堤狄弟是肆梯剔踢锑提题蹄啼体替嚏惕涕剃屉折倜荑悌逖绨缇棣睇鹈裼醍","tian":"蚕滇典佃甸苫天添填田甜恬舔腆吞沾掭嗔忝阗栝殄町畋钿蚺","tiao":"超稠调桃挑条迢眺跳姚佻苕啁祧窕蜩笤粜踔龆鲦髫","tie":"蝶贴铁帖占萜怙餮","ting":"奠厅听烃汀廷停亭庭挺艇莛葶婷梃町铤蜓霆","tong":"侗恫洞通桐酮瞳同铜彤童桶捅筒统痛恿重佟僮仝垌茼嗵峒恸潼砼硐艟","tou":"逗偷投头透愉亠钭骰","tu":"跌杜凸秃突图徒途涂屠土吐兔余堍荼菟钍酴","tuan":"揣敦痪税湍团抟彖疃","tui":"弟税推颓腿蜕褪退脱追忒煺","tun":"吨敦囤褪吞屯臀吴逐氽饨沌暾肫豚炖窀","tuo":"池惰魄蛇税隋他它拖托脱鸵陀驮驼椭妥拓唾乇佗坨庹沲沱迤柝柁橐砣铊箨舄酡跎鼍","wa":"凹挖哇蛙洼娃瓦袜鞋佤娲腽","wai":"歪外夭崴","wan":"蔓免娩豌弯湾玩顽丸烷完碗挽晚皖惋宛婉万腕园剜芄莞菀纨绾琬朊脘畹蜿箢","wang":"方皇匡芒汪王亡枉网往旺望忘妄罔尢惘辋魍","wei":"堤机立威巍微危韦违桅围唯惟为潍维苇萎委伟伪尾纬未蔚味畏胃喂魏位渭谓尉慰卫遗有于倭偎诿阢隈隗圩芟荽葳薇囗帏帷崴嵬猗猥猬闱沩洧涠逶娓玮韪軎炜煨熨眭睢痿艉隹鲔","wen":"昧免娩瘟温蚊文闻纹吻稳紊问限眼刎愠阌汶玟璺殁笏雯","weng":"嗡翁瓮壅蓊蕹","wo":"瘟挝蜗涡窝我斡卧握沃夭倭莴喔嗌幄渥媪杌肟硪龌","wu":"恶母亡巫呜钨乌污诬屋无芜梧吾吴毋武五捂午舞伍侮坞戊雾晤物勿务悟误兀仡仵侉阢邬圬芴呒唔喔庑怃忤浯渥寤迕妩婺骛杌牾於旄焐瞀鹉鹜痦蜈蝥笏鋈鼯","xi":"既腊猎卤栖洒屎撕昔熙析西硒矽晰嘻吸锡牺稀息希悉膝夕惜熄烯溪汐犀檄袭席习媳喜铣洗系隙戏细僖兮隰郄郗茜菥葸蓰奚咭咦唏徙饩阋浠淅屣嬉玺樨曦觋欷歙熹禊禧嵇皙穸裼褶蜥蜴螅蟋舄舾羲粞翕醯蹊鼷","xia":"呼唬假瞎虾匣霞辖暇峡侠狭下厦夏吓斜押呀葭呷哧嗑嗄岈狎遐瑕柙毳歃硖瘕罅黠","xian":"捍肩碱见洒省探铣洗掀锨先仙鲜纤咸贤衔舷闲涎弦嫌显险现献县腺馅羡宪陷限线矣冼苋莶藓岘彡猃慊濂寰暹妗娴氙燹祆黹锬鹇痫蚬筅籼酰跣跹霰","xiang":"亨降攘相厢镶香箱襄湘乡翔祥详想响享项巷橡像向象洋芗葙饷庠骧缃蟓舡鲞飨","xiao":"号呼唬胶狡俏梢捎芍哨搜萧硝霄削哮嚣销消宵淆晓小孝校肖啸笑效爻佼叟茭哓咻崤潇逍姣骁绡枭枵蛸筱箫魈","xie":"溉接桔解契楔些歇蝎鞋协挟携邪斜胁谐写械卸蟹懈泄泻谢屑血耶叶豫汁偕亵隰勰燮苴薤摺撷唏喈獬廨渫瀣迦邂绁缬榭榍歙眭颉跬躞鲑骱","xin":"款薪芯锌欣辛新忻心信衅寻囟馨莘忄昕歆镡鑫","xing":"省胜星腥猩惺兴刑型形邢行醒幸杏性姓研陉荇荥擤饧悻硎","xiong":"能宪兄凶胸匈汹雄熊芎","xiu":"臭宿休修羞朽嗅锈秀袖绣莠咻岫馐庥溴煦鸺貅髹","xu":"呼姐邪休墟戌需虚嘘须徐许蓄酗叙旭序畜恤絮婿绪续于余芋吁馘诩勖圩蓿咻怵洫浒溆顼栩旮肷朐煦砉盱胥糈醑雩","xuan":"暖券轩喧宣悬旋玄选癣眩绚撰滋亘儇谖萱揎擐泫洵涓渲漩璇楦昕暄炫煊碹铉镟痃","xue":"炔削哮靴薛学穴雪血谑噱嚯泶踅鳕","xun":"遁荤浚洒梭潭勋熏循旬询寻驯巡殉汛训讯逊迅巽郇埙荀荨蕈薰峋徇狻獯恂悛洵浔逡曛窨醺鑫鲟","ya":"吾歇邪压押鸦鸭呀丫芽牙蚜崖衙涯雅哑亚讶御札轧伢垭揠吖岈迓娅琊桠氩砑碣睚痖疋","yan":"癌俺厂但淡广狠蔫铅涎羡巡焉咽阉烟淹盐严研蜒岩延言颜阎炎沿奄掩眼衍演艳堰燕厌砚雁唁彦焰宴谚验殷淫厣赝剡俨偃兖讠谳阽郾鄢埏埯芫菸揞崦庵恹闫阏洇湮滟妍嫣琰檐晏氤胭腌焱罨覃筵酽趼魇餍鼹","yang":"昂殃央鸯秧杨扬佯疡羊洋阳氧仰痒养样漾英映徉怏泱炀烊恙蛘鞅","yao":"侥么疟陶邀腰妖瑶摇尧遥窑谣姚咬舀药要耀淫由幼约钥夭爻佻揄吆崤崾徭徼洮瀹幺珧杳轺曜肴铫鹞窈繇鳐","ye":"喝射墅涂邪斜咽椰噎耶爷野冶也页掖业叶曳腋夜液拽靥谒邺荼揶揲揞洇晔烨铘","yi":"艾怠迭蛾疙姬隶奇崎汽蛇射失施食巳它台叹听尾熙夕羡泄焉噎也一壹医揖铱依伊衣颐夷遗移仪胰疑沂宜姨彝椅蚁倚已乙矣以艺抑易邑屹亿役臆逸肄疫亦裔意毅忆义益溢诣议谊译异翼翌绎印丿刈劓仡佚佗佾诒圪圯坨埸懿苡荑薏弈奕挹掎搋弋呓咦咿嗌噫峄嶷猗饴怿怡悒洫渫漪迤驿缢殪轶贻犄欹旖焱熠硪眙钇镒镱雉痍瘗癔翊衤袂蜴舣羿翳酏黝黟","yin":"币垦潭听烟言壹沂茵荫因殷音阴姻吟银淫寅饮尹引隐印湛众胤鄞廴圻垠堙芩茚吲喑狺夤洇湮氤铟瘾窨蚓霪龈","ying":"逞甸景哩央英樱婴鹰应缨莹萤营荧蝇迎赢盈影颖硬映嬴郢茔荥莺萦蓥撄哽嘤膺滢潆瀛瑛璎楹媵鹦瘿颍罂","yo":"哟育唷","yong":"容拥佣臃痈庸雍踊蛹咏泳涌永恿勇用遇俑壅墉蕹喁慵邕镛甬臾鳙饔","you":"奥泅扰叹幽优悠忧尤由邮铀犹油游酉有友右佑釉诱又幼卣攸侑坳莠莜莸尢揄呦囿宥柚猷牖铕疣聱蚰蚴蝣蝤繇鱿黝鼬","yu":"奥懊澳谷或亏舒宛王蔚尉梧吾衙迂淤于盂榆虞愚舆余俞逾鱼愉渝渔隅予娱雨与屿禹宇语羽玉域芋郁吁遇喻峪御愈欲狱育誉浴寓裕预豫驭苑粥禺毓伛俣谀谕圩萸菸菀蓣拗揄唷喁噢圄圉崛嵛狳饫馀庾阈汩鬻妪妤纡瑜栩昙昱觎毹腴腧欤於煜煨熨燠肀聿钰鹆鹬瘐瘀窬窳蜍蜮蝓竽臾舁雩龉","yuan":"穿捐阮宛咽鸳渊冤元垣袁原援辕园员圆猿源缘远苑愿怨院允垸塬芫掾圜沅涓媛瑗橼爰眢畹鸢螈箢鼋","yue":"块乐说蜕曰约越跃钥岳粤月悦阅龠哕囝瀹妁栎樾刖钺蠖","yun":"盾均宛尉瘟温尹员苑怨耘云郧匀陨允运蕴酝晕韵孕郓芸菀狁恽愠媪纭韫殒昀氲熨筠","za":"匝砸杂咱扎咋籴拶咂啐嘁","zai":"才栽哉灾宰载再在仔崽甾","zan":"咱攒暂赞拶涔湔瓒昝簪糌趱錾","zang":"藏赃脏葬奘戕驵臧","zao":"槽草窖遭糟凿藻枣早澡蚤躁噪造皂灶燥唣","ze":"侧措责择则泽咋柞仄赜啧帻迮昃稷笮箦舴","zei":"贼","zen":"怎僭谮","zeng":"增憎曾赠综缯甑罾锃","zha":"册插查哆蜡扎喳渣札轧铡闸眨栅榨咋乍炸诈柞苴揸吒咤哳喋馇怍渫楂膪砟痄蚱笮齄","zhai":"侧柴疵翟度祭择摘斋宅窄债寨膪砦瘵豸","zhan":"颤袒瞻毡詹粘沾盏斩辗崭展蘸栈占战站湛绽谵搌湔澶孱旃醮躔","zhang":"长樟章彰漳张掌涨杖丈帐账仗胀瘴障仉鄣幛嶂獐嫜璋蟑","zhao":"朝嘲淖桃蚤招昭找沼赵照罩兆肇召著爪着佻诏啁濯棹晁钊笊","zhe":"斥堵庶遮折哲蛰辙者锗蔗这浙著着乇谪陬耷摺嘀柘辄磔鹧褚褶蜇螫赭","zhei":"这","zhen":"趁唇滇鼎慎填珍斟真甄砧臻贞针侦枕疹诊震振镇阵帧圳坫蓁浈溱缜桢椹榛轸戡赈胗朕祯畛稹鸩箴","zheng":"敞承奠丁趟蒸挣睁征狰争怔整拯正政帧症郑证丞诤峥徵瞠町钲铮筝鲭","zhi":"埃抵积伎祁识示氏恃拓芝枝支吱蜘知肢脂汁之织职直植殖执值侄址指止趾只旨纸志挚掷至致置帜峙制智秩稚质炙痔滞治窒卮氐陟郅埴芷摭帙徵夂忮彘咫骘栉枳栀桎轵轾昵耆贽胝膣祉祗砥黹雉鸷痣蛭絷酯跖踬踯豸觯","zhong":"董童中盅忠钟衷终种肿重仲众冢夂忪潼锺蚣螽舂舯踵","zhou":"扭育舟周州洲诌粥轴肘帚咒皱宙昼骤逐注祝啄侏倜荮啁喙鬻妯纣绉柚胄碡籀舳繇酎","zhu":"朝除斗逗柠宁泞属术庶予之珠株蛛朱猪诸诛逐竹烛煮拄瞩嘱主著柱助蛀贮铸筑住注祝驻茁阻丶伫侏邾苎茱洙渚潴澍杼楮槠橥炷铢疰瘃褚蚰竺箸舳翥躅麈","zhua":"挝抓爪","zhuai":"拽转","zhuan":"传湍专砖转撰赚篆巽啭馔沌颛","zhuang":"幢桩庄装妆撞壮状僮奘憧戆艟","zhui":"揣垂隧致椎锥追赘坠缀萑惴骓缒槌隹","zhun":"淳敦屯谆准肫胗盹窀","zhuo":"掇缴淖勺著捉拙卓桌琢茁酌啄着灼浊倬诼蕞擢啜浞涿濯杓棹肫焯禚斫镯箸趵踔躅","zi":"柴疵次事吱兹咨资姿滋淄孜紫仔籽滓子自渍字谘茈呲嵫姊孳缁甾梓辎赀恣眦锱秭耔笫粢趑觜訾龇鲻髭","zong":"从鬃棕踪宗综总纵偬枞腙粽","zou":"趣邹走奏揍族诹陬鄹驺楱鲰","zu":"淬姐沮租足卒族祖诅阻组俎苴菹啐嘁槭镞蹴","zuan":"撮赚钻纂攥缵躜","zui":"摧撮堆咀嘴醉最罪蕞羧觜","zun":"奠蹲尊遵撙樽鳟","zuo":"醋撮挫凿乍琢昨左佐柞做作坐座阼唑嘬怍迮胙祚砟笮酢"};
+const PYMAP={};for(const k in PYT)for(const c of PYT[k])(PYMAP[c]||(PYMAP[c]=new Set())).add(k);
+const DIGIT={"0":["ling"],"1":["yi"],"2":["er","liang"],"3":["san"],"4":["si"],"5":["wu"],"6":["liu"],"7":["qi"],"8":["ba"],"9":["jiu"]};
+const SAME={nin:"ni"};               // 您=你 로 인정
+const fold=x=>SAME[x]||x;
+function toSyl(text){
+  const out=[];
+  for(const c of String(text||"")){
+    if(c==="儿")continue;
+    if(DIGIT[c]){out.push({c,r:new Set(DIGIT[c].map(fold))});continue}
+    if(c>="一"&&c<="鿿")out.push({c,r:new Set([...(PYMAP[c]||[])].map(fold))});
+  }
+  return out;
+}
+function findWord(said,syl,from){
+  const t=syl.map(fold);
+  for(let p=from;p+t.length<=said.length;p++){if(t.every((x,k)=>said[p+k].r.has(x)))return p}
+  return -1;
+}
+function localGrade(w,saidText){
+  const said=toSyl(saidText);
+  if(!said.length)return{score:0,feedback:"말한 내용이 인식되지 않았어요."};
+  const NEG=new Set(["不","没","別","别","未"]);
+  const missing=[],covered=new Set();let pos=-1,inOrder=true;
+  for(const [h,py,,syl] of w.words){
+    let p=findWord(said,syl,pos+1);
+    if(p<0){const q=findWord(said,syl,0);if(q<0){missing.push([h,py]);continue}inOrder=false;p=q}
+    for(let k=0;k<syl.length;k++)covered.add(p+k);
+    pos=Math.max(pos,p+syl.length-1);
+  }
+  const extra=said.filter((x,i)=>!covered.has(i)).map(x=>x.c);
+  const answerHasNeg=[...w.hz].some(c=>NEG.has(c));
+  const negAdded=!answerHasNeg&&extra.some(c=>NEG.has(c));
+  const answerLen=w.words.reduce((a,x)=>a+x[3].length,0);
+  const list=missing.map(([h,py])=>`${h}(${py})`).join(", ");
+  const extraTxt=extra.join("");
+  if(negAdded)return{score:0,neg:true,feedback:`정답에 없는 부정어(${extra.filter(c=>NEG.has(c)).join("")})가 들어가서 뜻이 반대가 됐어요. 정답: ${w.hz}`};
+  if(!missing.length&&inOrder&&!extra.length)return{score:2,feedback:"발음과 어순이 정확해요! 잘했어요."};
+  const errs=missing.length+(inOrder?0:1)+(extra.length?1:0);
+  if(missing.length<=Math.max(1,Math.floor(w.words.length/3))&&extra.length<=Math.max(3,answerLen)&&errs<=2){
+    const parts=[];
+    if(missing.length)parts.push(`빠지거나 다르게 들린 단어: ${list}`);
+    if(extra.length)parts.push(`정답에 없는 말이 더 들어갔어요: ${extraTxt}`);
+    if(!inOrder)parts.push("단어 순서가 정답과 달라요. 정답 어순을 다시 확인해 보세요");
+    return{score:1,feedback:parts.join(". ")+"."};
+  }
+  const parts=[];
+  if(missing.length)parts.push(`빠지거나 다르게 들린 단어: ${list}`);
+  if(extra.length)parts.push(`정답에 없는 말: ${extraTxt}`);
+  if(!inOrder)parts.push("어순도 정답과 달라요");
+  return{score:0,feedback:"정답과 많이 달라서 뜻 전달이 어려워요. "+parts.join(". ")+"."};
+}
+/* ================= 여행 회화 본시험 (녹음 · 음성 인식) ================= */
+const CH={"공항":"🛂","숙소":"🏨","이동":"🚕","카페":"☕","위급상황":"🚑"};
+const PAIRS=[[1,2],[3,4],[5,6],[7,8],[9,10],[11,12],[13,14],[15,16],[17,18],[19,20]];
+const byNo=n=>ALL.find(w=>w.no===n);
+const partnerOf=w=>{const p=PAIRS.find(p=>p.includes(w.no));if(!p)return null;return byNo(p[0]===w.no?p[1]:p[0])};
+const WORDS=ALL.filter(w=>w.star);                       // 시험 범위: ★수행 문장 10개
+const CHAPTERS=[...new Set(WORDS.map(w=>w.ch))];         // 공항 → 숙소 → 이동 → 카페 → 위급상황
+const LIMIT=15, PIN="2580", KEY_LOG="tx-log";
+const MODE_INFO={dialog:{name:"대화형",passes:Infinity},basic:{name:"기본",passes:2}};
+const CONVERT=raw=>raw>=10?Math.min(15,raw-5):4;
+
+const app=document.getElementById("app");
+let STU=null, MODE=null, GRADE=null, inTest=false, timer=null, cleanup=null, toastT=null;
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const chTag=w=>`<span class="chtag">${CH[w.ch]} ${esc(w.ch)}</span>`;
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+const jget=k=>{try{return JSON.parse(store(k)||"null")}catch(e){return null}};
+function toast(m){let el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";el.setAttribute("role","status");document.body.appendChild(el)}
+  el.innerHTML=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),6000);el.onclick=()=>el.classList.remove("on")}
+const fmtTime=t=>{const d=new Date(t),p=n=>String(n).padStart(2,"0");return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`};
+
+/* ---------- 소리 ---------- */
+function speak(t){
+  if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined"){toast("이 화면에서는 음성 읽기가 안 돼요. <b>Chrome</b>에서 열어 주세요.");return}
+  let started=false;
+  try{
+    const v=speechSynthesis.getVoices();const zh=v.find(x=>/^zh[-_]CN/i.test(x.lang))||v.find(x=>/^(zh|cmn)/i.test(x.lang))||null;
+    const u=new SpeechSynthesisUtterance(t);u.lang="zh-CN";u.rate=.85;if(zh)u.voice=zh;u.onstart=()=>{started=true};
+    const go=()=>{try{speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){}};
+    if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,150)}else go();
+    setTimeout(()=>{if(!started)toast("소리가 안 나요? 노트북 볼륨을 확인하고, 윈도우 설정 → 시간 및 언어 → 음성에서 <b>중국어</b> 음성을 추가해 주세요.")},2500);
+  }catch(e){}
+}
+const stopAudio=()=>{try{speechSynthesis.cancel()}catch(e){}};
+try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
+
+/* ---------- 마이크 · 음성 인식 · 녹음 ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const POL=document.permissionsPolicy||document.featurePolicy;
+const MIC_BLOCKED=!!(POL&&POL.allowsFeature&&POL.allowsFeature("microphone")===false);
+const CAN_REC=!MIC_BLOCKED&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)&&typeof MediaRecorder!=="undefined";
+const CAN_SR=!MIC_BLOCKED&&!!SR;
+const norm=s=>String(s||"").replace(/[^一-鿿0-9]/g,"");
+const REC={stream:null,ok:false,mime:"",err:""};
+async function micInit(){
+  if(REC.ok&&REC.stream&&REC.stream.getAudioTracks().some(t=>t.readyState==="live"))return true;
+  if(!CAN_REC){REC.ok=false;REC.err="unsupported";return false}
+  try{
+    REC.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+    REC.mime=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg;codecs=opus"].find(m=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||"";
+    REC.ok=true;REC.err="";
+  }catch(e){REC.ok=false;REC.err=e.name||"error"}
+  return REC.ok;
+}
+function micRelease(){try{REC.stream&&REC.stream.getTracks().forEach(t=>t.stop())}catch(e){}REC.stream=null;REC.ok=false}
+function startClip(){
+  if(!REC.ok)return null;
+  try{
+    const chunks=[], mr=new MediaRecorder(REC.stream,REC.mime?{mimeType:REC.mime}:undefined);
+    mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    const done=new Promise(res=>{mr.onstop=()=>res(chunks.length?new Blob(chunks,{type:mr.mimeType||REC.mime||"audio/webm"}):null)});
+    mr.start(250);
+    return {stop:()=>{try{if(mr.state!=="inactive")mr.stop()}catch(e){}return Promise.race([done,new Promise(r=>setTimeout(()=>r(null),2500))])}};
+  }catch(e){return null}
+}
+const extOf=t=>/mp4|aac|m4a/.test(t||"")?"m4a":/ogg/.test(t||"")?"ogg":"webm";
+function fixDurations(root){root.querySelectorAll("audio").forEach(a=>{a.addEventListener("loadedmetadata",()=>{if(a.duration===Infinity){a.currentTime=1e7;a.addEventListener("timeupdate",function f(){a.removeEventListener("timeupdate",f);a.currentTime=0},{once:true})}},{once:true})})}
+
+/* ---------- 녹음 보관 (이 기기의 IndexedDB) ---------- */
+let IDBP=null;
+function idb(){return IDBP||(IDBP=new Promise((res,rej)=>{try{const r=indexedDB.open("tx-audio",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}}))}
+async function idbPut(k,v){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction("clips","readwrite");t.objectStore("clips").put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
+async function idbGet(k){try{const d=await idb();return await new Promise(res=>{const q=d.transaction("clips").objectStore("clips").get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}catch(e){return null}}
+async function idbDelPrefix(pre){try{const d=await idb();await new Promise(res=>{const t=d.transaction("clips","readwrite"),st=t.objectStore("clips");const c=st.openCursor();c.onsuccess=()=>{const cur=c.result;if(!cur)return;if(String(cur.key).startsWith(pre))cur.delete();cur.continue()};t.oncomplete=res;t.onerror=res})}catch(e){}}
+async function saveFile(name,blob){
+  try{if(window.claude){const dl=await claude.use("downloads");if(dl){await dl.save({filename:name,data:blob});return true}}}catch(e){if(e&&e.code==="cancelled")return false}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);return true}catch(e){toast("파일을 저장하지 못했어요.");return false}
+}
+
+/* ---------- 1) 응시자 정보 ---------- */
+function entry(){
+  inTest=false;clearInterval(timer);if(cleanup){cleanup();cleanup=null}stopAudio();
+  app.innerHTML=`<section class="panel">
+    <p class="title">여행 회화 말하기 수행평가</p>
+    <p class="lead">반·번호·이름을 정확히 입력한 뒤 시작하세요.</p>
+    <form id="f" class="form" autocomplete="off">
+      <label for="fc">반<input id="fc" inputmode="numeric" maxlength="3" placeholder="예: 3" required></label>
+      <label for="fn">번호<input id="fn" inputmode="numeric" maxlength="3" placeholder="예: 17" required></label>
+      <label for="fm" class="full">이름<input id="fm" maxlength="12" placeholder="이름" required></label>
+      <button class="btn primary wide" style="grid-column:1/-1" type="submit">다음</button>
+    </form>
+  </section>`;
+  fc.focus();
+  f.onsubmit=e=>{e.preventDefault();
+    const s={cls:fc.value.trim(),num:fn.value.trim(),name:fm.value.trim()};
+    if(!s.cls||!s.num||!s.name){toast("반, 번호, 이름을 모두 입력하세요.");return}
+    STU=s;modeSelect()};
+}
+const who=()=>`<div class="who-card"><b>${esc(STU.cls)}반 ${esc(STU.num)}번 ${esc(STU.name)}</b><button class="tbtn" id="fix">고치기</button></div>`;
+const bindFix=()=>{const b=document.getElementById("fix");if(b)b.onclick=entry};
+
+/* ---------- 2) 시험 방식 ---------- */
+function modeSelect(){
+  app.innerHTML=`<section class="panel">
+    ${who()}
+    <p class="lead">어떤 방식으로 시험을 볼까요?</p>
+    <div class="roles">
+      <button class="role" data-m="dialog"><span class="ri" aria-hidden="true">💬</span><b>대화형</b><small>상대의 말을 먼저 듣고(🔊) 대답하기<br>패스 무제한</small></button>
+      <button class="role" data-m="basic"><span class="ri" aria-hidden="true">📝</span><b>기본</b><small>한국어 문장만 보고 말하기<br>패스 2번</small></button>
+    </div>
+  </section>`;
+  bindFix();
+  app.querySelectorAll(".role").forEach(b=>b.onclick=()=>{MODE=b.dataset.m;gradeSelect()});
+}
+
+/* ---------- 3) 채점 방식 + 마이크 확인 ---------- */
+function gradeSelect(){
+  const why=MIC_BLOCKED?"이 화면에서는 마이크를 쓸 수 없어요. <b>GitHub 주소를 Chrome</b>으로 열어 주세요.":!SR?"이 브라우저는 음성 인식이 안 돼요. <b>Chrome</b>으로 열어 주세요.":"";
+  const P=MODE_INFO[MODE].passes;
+  app.innerHTML=`<section class="panel">
+    ${who()}
+    <p class="lead">${MODE_INFO[MODE].name} · 채점 방식을 고르세요.</p>
+    <div class="gpick">
+      <button class="gopt" data-g="auto" ${CAN_SR?"":"disabled"}><span class="ri" aria-hidden="true">🤖</span><b>자동 채점 (음성 인식)</b><small>말한 내용을 받아 적어 자동으로 점수를 매겨요. 끝나고 선생님이 확인·수정할 수 있어요.</small>${why?`<small class="no">${why}</small>`:""}</button>
+      <button class="gopt" data-g="self"><span class="ri" aria-hidden="true">✍️</span><b>셀프 채점</b><small>시험이 끝나면 녹음을 들으면서 문장마다 점수를 골라요.</small></button>
+    </div>
+    <div class="miccheck">
+      <p class="mct"><b>🎙️ 녹음</b> <span id="mst">${CAN_REC?"문장마다 자동으로 녹음돼요. 시작 전에 마이크를 확인해 주세요.":MIC_BLOCKED?"이 화면에서는 녹음할 수 없어요. GitHub 주소를 Chrome으로 열면 녹음돼요.":"이 브라우저는 녹음을 지원하지 않아요."}</span></p>
+      ${CAN_REC?`<div class="row"><button class="btn" id="mc">마이크 확인</button><div class="meter" aria-hidden="true"><i id="mv"></i></div></div>`:""}
+    </div>
+    <ol class="rulelist">
+      <li>${CHAPTERS.join(" · ")} 상황의 대답 문장 <b>${WORDS.length}문장</b>이 배운 순서대로 나와요.</li>
+      ${MODE==="dialog"?`<li>먼저 <b>상대가 하는 말</b>이 나와요. 문장을 누르면 다시 들을 수 있고, <b>다음</b>을 누르면 내 차례예요.</li>`:""}
+      <li>한국어 뜻을 보고 <b>시작</b>을 누른 뒤 <b>15초 안에</b> 중국어로 말하고 <b>말했어요</b>를 누르세요.</li>
+      <li>모르는 문장은 <b>패스</b>해서 맨 뒤로 보낼 수 있어요. ${P===Infinity?"횟수 제한은 없어요.":`${P}번까지 쓸 수 있어요.`}</li>
+      <li>문장마다 2점·1점·0점, 20점 만점을 <b>15점 만점</b>으로 환산해요.</li>
+    </ol>
+  </section>`;
+  bindFix();
+  let meterStop=null;
+  const runMeter=()=>{
+    try{const ac=new (window.AudioContext||window.webkitAudioContext)(),src=ac.createMediaStreamSource(REC.stream),an=ac.createAnalyser();an.fftSize=512;src.connect(an);
+      const buf=new Uint8Array(an.fftSize);let raf=0;
+      const loop=()=>{an.getByteTimeDomainData(buf);let m=0;for(const v of buf)m=Math.max(m,Math.abs(v-128));const el=document.getElementById("mv");if(!el){ac.close();return}el.style.width=Math.min(100,m/64*100)+"%";raf=requestAnimationFrame(loop)};loop();
+      meterStop=()=>{cancelAnimationFrame(raf);try{ac.close()}catch(e){}};
+    }catch(e){}
+  };
+  if(CAN_REC)mc.onclick=async()=>{
+    mc.disabled=true;mst.textContent="마이크 사용 허락을 물어보면 '허용'을 눌러 주세요…";
+    const ok=await micInit();
+    if(ok){mst.innerHTML="✅ 마이크 연결됨. 말해 보세요. 막대가 움직이면 녹음이 잘 돼요.";runMeter()}
+    else{mst.innerHTML=`❌ 마이크를 쓸 수 없어요 (${esc(REC.err)}). 주소창 왼쪽 자물쇠 → 마이크 <b>허용</b> 후 다시 눌러 주세요. 녹음 없이 셀프 채점으로도 볼 수 있어요.`;mc.disabled=false}
+  };
+  app.querySelectorAll(".gopt").forEach(b=>b.onclick=async()=>{
+    if(b.disabled)return;
+    GRADE=b.dataset.g;
+    if(CAN_REC&&!REC.ok)await micInit();
+    if(GRADE==="auto"&&!REC.ok&&REC.err==="NotAllowedError"){toast("마이크가 막혀 있어서 자동 채점을 쓸 수 없어요. 마이크를 허용하거나 셀프 채점을 고르세요.");return}
+    meterStop&&meterStop();
+    confirmStart();
+  });
+}
+function confirmStart(){
+  app.innerHTML=`<section class="panel center">
+    ${who()}
+    <p class="title" style="margin-top:10px">준비됐나요?</p>
+    <p class="lead">${MODE_INFO[MODE].name} · ${GRADE==="auto"?"자동 채점":"셀프 채점"} · ${REC.ok?"🔴 문장마다 녹음":"녹음 없음"}<br>시작하면 멈추거나 되돌릴 수 없어요.</p>
+    <div class="row" style="justify-content:center"><button class="btn" id="no">이전</button><button class="btn primary" id="yes">시험 시작</button></div>
+  </section>`;
+  bindFix();no.onclick=gradeSelect;yes.onclick=runExam;yes.focus();
+}
+
+/* ---------- 4) 시험 ---------- */
+function runExam(){
+  const plan=CHAPTERS.flatMap(c=>WORDS.filter(w=>w.ch===c).sort((a,b)=>a.no-b.no));
+  const queue=[...plan], total=plan.length, asked=[], passedNos=new Set(), results=new Map();
+  let passes=MODE_INFO[MODE].passes, lastCh=null, alive=true, sr=null, clip=null;
+  inTest=true;
+  cleanup=()=>{alive=false;inTest=false;clearInterval(timer);try{sr&&sr.abort()}catch(e){}clip&&clip.stop();stopAudio()};
+  const passLabel=()=>passes===Infinity?"패스 무제한":`패스 ${passes}번 남음`;
+  const head=w=>`<div class="bar"><i style="width:${asked.length/total*100}%"></i></div>
+    <div class="row"><span class="count">${Math.min(asked.length+1,total)} / ${total}</span>${w?chTag(w):""}<span class="spacer"></span><span class="count">${esc(STU.name)} · ${passLabel()}</span></div>`;
+  const next=()=>{
+    clearInterval(timer);if(!alive)return;
+    if(!queue.length){inTest=false;cleanup=null;return review(asked,results)}
+    const w=queue[0];
+    if(w.ch!==lastCh)chapter(w);else MODE==="dialog"?partner(w):mine(w);
+  };
+  function chapter(w){
+    app.innerHTML=`<section class="panel tall">${head()}
+      <button class="chapbtn" id="cb"><span class="ci" aria-hidden="true">${CH[w.ch]}</span><span class="cn">${esc(w.ch)}편</span><small>누르면 문제가 나와요</small></button></section>`;
+    cb.onclick=()=>{lastCh=w.ch;MODE==="dialog"?partner(w):mine(w)};cb.focus({preventScroll:true});
+  }
+  function partner(w){
+    const p=partnerOf(w), ctx=(p&&p.no<w.no)?p:null;
+    app.innerHTML=`<section class="panel tall">${head(w)}
+      <div class="ptn">${ctx
+        ?`<button class="ptx" id="pc" aria-label="상대 문장 다시 듣기"><span class="who">🔊 상대가 말해요</span><span class="pz">${esc(ctx.hz)}</span><span class="pp">${esc(ctx.py)}</span><span class="pk">${esc(ctx.kr)}</span></button>`
+        :`<div class="ptx"><span class="who">이번 문장</span><span class="me-first">이번에는 내가 먼저 말해요</span></div>`}
+        <button class="btn primary nextb" id="nb">다음 →</button>
+      </div></section>`;
+    if(ctx){const pcEl=document.getElementById("pc");const play=()=>{speak(ctx.hz);pcEl.classList.add("played");setTimeout(()=>pcEl.classList.remove("played"),700)};pcEl.onclick=play;play()}
+    nb.onclick=()=>{stopAudio();mine(w)};nb.focus({preventScroll:true});
+  }
+  function mine(w){
+    let left=LIMIT, said="", finalTxt="", answered=false, stopping=false, started=false;
+    app.innerHTML=`<section class="panel tall">${head(w)}
+      <div class="tbar"><i id="tb"></i></div>
+      <div class="row" style="margin:6px 0 4px"><span class="clock" id="tc">${LIMIT}</span><span class="count" style="margin-left:6px">초</span><span class="spacer"></span><span class="recdot" id="rd" hidden>● 녹음 중</span></div>
+      <div class="ask"><p class="askl">이 문장을 중국어로 말하세요</p><div class="askq">${esc(w.kr)}</div><div class="askhz" lang="zh-CN">${esc(w.hz)}</div></div>
+      <p class="heard" id="hv"></p>
+      <div id="zone" class="zone"><button class="btn primary" id="gs">시작 ▶</button></div>
+      <div class="row passrow"><button class="btn" id="ps" ${passes<=0?"disabled":""}>패스 (맨 뒤로)</button></div>
+    </section>`;
+    tb.style.width="100%";
+    const tick=()=>{left--;tc.textContent=Math.max(left,0);tb.style.width=(left/LIMIT*100)+"%";if(left<=5)tc.classList.add("low");if(left<=0)finishLine("timeout")};
+    const startSR=()=>{
+      if(GRADE!=="auto"||!CAN_SR)return;
+      try{
+        sr=new SR();sr.lang="zh-CN";sr.interimResults=true;sr.continuous=true;sr.maxAlternatives=1;
+        sr.onresult=e=>{let fin="",tmp="";for(const r of e.results){if(r.isFinal)fin+=r[0].transcript;else tmp+=r[0].transcript}finalTxt=fin;said=fin+tmp;const hv=document.getElementById("hv");if(hv)hv.textContent=said};
+        sr.onerror=e=>{if(["not-allowed","service-not-allowed","audio-capture","network","language-not-supported"].includes(e.error)){GRADE="self";toast(e.error==="network"?"음성 인식 서버에 연결되지 않아서 <b>셀프 채점</b>으로 바꿨어요. 녹음은 계속돼요.":"음성 인식을 쓸 수 없어서 <b>셀프 채점</b>으로 바꿨어요. 녹음은 계속돼요.")}};
+        let restarts=0;
+        sr.onend=()=>{if(!answered&&!stopping&&alive&&GRADE==="auto"&&restarts++<8){try{sr.start()}catch(e){}}};
+        sr.start();
+      }catch(e){}
+    };
+    const stopSR=()=>new Promise(res=>{if(!sr)return res();stopping=true;let done=false;const fin=()=>{if(!done){done=true;res()}};sr.onend=fin;try{sr.stop()}catch(e){fin()}setTimeout(fin,1500)});
+    async function finishLine(status){
+      if(answered)return;answered=true;clearInterval(timer);ps.disabled=true;
+      zone.innerHTML=`<p class="lead center">${status==="timeout"?"⏰ 시간이 끝났어요. ":""}저장하고 있어요…</p>`;
+      await stopSR();
+      const blob=clip?await clip.stop():null;clip=null;sr=null;
+      asked.push({w,status,passed:passedNos.has(w.no)});queue.shift();
+      results.set(w.no,{said:(said||finalTxt).trim(),blob});
+      if(!alive)return;
+      setTimeout(next,status==="timeout"?700:150);
+    }
+    gs.onclick=()=>{
+      if(answered)return;started=true;
+      clip=startClip();if(clip)rd.hidden=false;
+      startSR();timer=setInterval(tick,1000);
+      zone.innerHTML=`<button class="btn primary" id="sd">말했어요 →</button>`;
+      sd.onclick=()=>finishLine("spoken");sd.focus({preventScroll:true});
+      if(GRADE==="auto")hv.textContent="듣고 있어요…";
+    };
+    ps.onclick=async()=>{
+      if(answered||passes<=0)return;answered=true;clearInterval(timer);
+      if(started){stopping=true;try{sr&&sr.abort()}catch(e){}if(clip)await clip.stop()}
+      sr=null;clip=null;passes--;passedNos.add(w.no);queue.push(queue.shift());
+      next();
+    };
+    gs.focus({preventScroll:true});
+  }
+  next();
+}
+
+/* ---------- 5) 채점 (녹음 듣고 확인) ---------- */
+function autoScore(w,said){
+  if(!norm(said))return{score:0,feedback:"인식된 말이 없어요."};
+  const g=localGrade(w,said);return{score:g.score,feedback:g.feedback};
+}
+function review(asked,results){
+  const rows=asked.map(a=>{const x=results.get(a.w.no)||{said:"",blob:null};const au=GRADE==="auto"?autoScore(a.w,x.said):null;return{...a,...x,auto:au,score:au?au.score:null}});
+  const urls=rows.map(r=>r.blob?URL.createObjectURL(r.blob):null);
+  app.innerHTML=`<section class="panel">
+    <p class="title">👩‍🏫 채점하기</p>
+    <div class="who-card"><b>${esc(STU.cls)}반 ${esc(STU.num)}번 ${esc(STU.name)}</b></div>
+    <p class="lead">${GRADE==="auto"?"음성 인식으로 매긴 점수예요. 녹음을 들어 보고 필요하면 고친 뒤 제출하세요.":"녹음을 들으면서 문장마다 점수를 고른 뒤 제출하세요."} 시험에 나온 순서대로예요.</p>
+    <ol class="glist">${rows.map((r,i)=>`<li>
+      <div class="qn"><span class="num">${i+1}번</span>${chTag(r.w)}${r.passed?`<span class="flag pass">패스했던 문장</span>`:""}${r.status==="timeout"?`<span class="flag">시간 초과</span>`:""}</div>
+      <p class="k">${esc(r.w.kr)}</p>
+      <p class="zh">${esc(r.w.hz)}</p><p class="p">${esc(r.w.py)}</p>
+      ${urls[i]?`<audio controls preload="metadata" src="${urls[i]}"></audio>`:`<p class="count">녹음 없음</p>`}
+      ${GRADE==="auto"?`<p class="heardl">인식된 말: <b>${r.said?esc(r.said):"(없음)"}</b></p><p class="fb">${esc(r.auto.feedback)}</p>`:""}
+      <div class="seg" role="group" aria-label="${i+1}번 점수">${[[2,"정확함"],[1,"일부 오류"],[0,"못 함"]].map(([v,t])=>`<button class="s${v}" data-i="${i}" data-v="${v}" aria-pressed="${r.score===v}">${v}점<small>${t}</small></button>`).join("")}</div>
+    </li>`).join("")}</ol>
+    <div class="sticky"><span class="count" id="gc"></span><span class="spacer"></span><button class="btn primary" id="sub">제출하기</button></div>
+  </section>`;
+  fixDurations(app);
+  const upd=()=>{const n=rows.filter(r=>r.score!==null).length,sum=rows.reduce((a,r)=>a+(r.score||0),0);gc.textContent=`${n} / ${rows.length} 채점 · 합계 ${sum} / 20점`;sub.disabled=n<rows.length};upd();
+  app.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;rows[i].score=+b.dataset.v;b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));upd()});
+  sub.onclick=async()=>{
+    if(rows.some(r=>r.score===null))return;
+    sub.disabled=true;sub.textContent="저장 중…";
+    const at=Date.now(), id=`t${at}-${Math.random().toString(36).slice(2,6)}`;
+    const raw=rows.reduce((a,r)=>a+r.score,0), silent=rows.every(r=>r.status==="timeout")&&raw===0;
+    const rec={id,...STU,at,mode:MODE,grade:GRADE==="auto"?"자동":"셀프",raw,maxRaw:20,score:silent?3:CONVERT(raw),
+      items:rows.map(r=>({no:r.w.no,score:r.score,said:r.said||"",st:r.status,passed:r.passed,audio:!!r.blob,type:r.blob?r.blob.type:""}))};
+    let audioOK=true;
+    for(const r of rows)if(r.blob){try{await idbPut(`${id}:${r.w.no}`,r.blob)}catch(e){audioOK=false}}
+    const log=jget(KEY_LOG)||[];log.push(rec);store(KEY_LOG,JSON.stringify(log));
+    urls.forEach(u=>u&&URL.revokeObjectURL(u));
+    result(rec,audioOK);
+  };
+  window.scrollTo(0,0);
+}
+
+/* ---------- 6) 결과 한 장 ---------- */
+function result(r,audioOK){
+  const silent=r.score===3;
+  app.innerHTML=`<section class="panel">
+    <div class="stamp"><b>${r.score}</b><span>/ 15</span></div>
+    <div class="sheet">
+      <div class="row"><b style="font-size:1.15rem">${esc(r.cls)}반 ${esc(r.num)}번 ${esc(r.name)}</b><span class="spacer"></span><span class="stamped">${fmtTime(r.at)} 제출</span></div>
+      <div class="dots">${r.items.map((it,k)=>`<div class="dot s${it.score}"><b>${it.score}</b>${k+1}번</div>`).join("")}</div>
+      <p class="count" style="margin:8px 0 0">원점수 ${r.raw} / 20 → 환산 ${r.score} / 15 · ${MODE_INFO[r.mode].name} · ${r.grade} 채점${r.items.some(i=>i.audio)?" · 녹음 저장됨":""}</p>
+    </div>
+    ${audioOK?"":`<p class="note err">녹음 파일 일부를 저장하지 못했어요.</p>`}
+    <p class="note ok">결과를 이 기기에 저장했어요. 이 화면을 선생님께 보여 주세요.</p>
+    <details class="more conv"><summary>점수 환산표</summary><table>${[20,19,18,17,16,15,14,13,12,11,10].map(v=>`<tr class="${v===r.raw&&!silent?"hit":""}"><td>${v}점</td><td>${v-5}점</td></tr>`).join("")}<tr class="${r.raw<=9&&!silent?"hit":""}"><td>9점 이하</td><td>4점</td></tr><tr class="${silent?"hit":""}"><td>미응시·전혀 말하지 못함</td><td>3점</td></tr></table></details>
+    <button class="btn primary wide" id="nx">다음 학생 시험 보기</button>
+  </section>`;
+  nx.onclick=()=>{micRelease();entry()};
+  window.scrollTo(0,0);
+}
+
+/* ---------- 결과 모아보기 (선생님) ---------- */
+let teacherOK=false;
+tmenu.onclick=()=>{if(inTest){toast("시험이 끝난 뒤에 열 수 있어요.");return}teacherOK?teacher():pinGate()};
+function pinGate(){
+  app.innerHTML=`<section class="panel">
+    <p class="title">결과 모아보기</p>
+    <p class="lead">학생들이 볼 수 없도록 비밀번호를 입력하세요.</p>
+    <form class="pin" id="pf"><input id="pi" type="password" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="비밀번호"><button class="btn primary" type="submit">열기</button></form>
+    <p style="margin:14px 0 0"><button class="tbtn" id="bk">← 시험 화면으로</button></p>
+  </section>`;
+  pi.focus();
+  pf.onsubmit=e=>{e.preventDefault();if(pi.value===PIN){teacherOK=true;teacher()}else{toast("비밀번호가 맞지 않아요.");pi.value=""}};
+  bk.onclick=entry;
+}
+const sortRecs=a=>a.sort((x,y)=>(+x.cls-+y.cls)||(+x.num-+y.num)||(x.at-y.at));
+function teacher(){
+  const all=sortRecs(jget(KEY_LOG)||[]);
+  app.innerHTML=`<section class="panel">
+    <div class="row"><p class="title" style="margin:0">결과 모아보기</p><span class="spacer"></span><span class="count">${all.length}건</span></div>
+    <p class="lead" style="margin-top:6px">이 기기에서 본 시험 결과예요. 녹음은 <b>듣기</b>에서 들을 수 있어요.</p>
+    ${all.length?`<div class="tw"><table class="tt"><thead><tr><th>반</th><th>번호</th><th>이름</th><th>방식</th><th>점수</th><th>원점수</th><th>제출</th><th></th></tr></thead><tbody>
+      ${all.map(r=>`<tr><td>${esc(r.cls)}</td><td>${esc(r.num)}</td><td>${esc(r.name)}</td><td>${MODE_INFO[r.mode].name}·${r.grade}</td><td class="sc">${r.score}/15</td><td>${r.raw}/20</td><td>${fmtTime(r.at)}</td><td class="acts"><button class="tbtn" data-v="${esc(r.id)}">듣기</button><button class="del" data-d="${esc(r.id)}">삭제</button></td></tr>`).join("")}
+    </tbody></table></div>`:`<p class="note ok">아직 결과가 없어요.</p>`}
+    <div class="row"><button class="btn" id="csv" ${all.length?"":"disabled"}>CSV 받기</button><button class="btn" id="zip" ${all.some(r=>r.items.some(i=>i.audio))?"":"disabled"}>녹음 전체 받기 (zip)</button><span class="spacer"></span><button class="btn primary" id="bk">시험 화면으로</button></div>
+    <p class="count" style="margin-top:12px">결과와 녹음은 이 노트북 브라우저에만 저장돼요. 시험이 끝나면 CSV와 녹음을 받아 두세요. 브라우저 기록을 지우면 함께 지워져요.</p>
+  </section>`;
+  bk.onclick=entry;
+  app.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>detail(b.dataset.v));
+  app.querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
+    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="정말 삭제?";setTimeout(()=>{if(b.isConnected){b.dataset.armed="";b.textContent="삭제"}},3000);return}
+    const id=b.dataset.d;store(KEY_LOG,JSON.stringify((jget(KEY_LOG)||[]).filter(r=>r.id!==id)));await idbDelPrefix(id+":");toast("삭제했어요.");teacher();
+  });
+  csv.onclick=()=>{
+    const nos=WORDS.map(w=>w.no);
+    const head=["반","번호","이름","방식","채점","환산점수(15)","원점수(20)","제출 시각",...WORDS.map(w=>w.hz),"인식된 말"];
+    const rows=all.map(r=>{const m=new Map(r.items.map(i=>[i.no,i]));return [r.cls,r.num,r.name,MODE_INFO[r.mode].name,r.grade,r.score,r.raw,new Date(r.at).toLocaleString("ko-KR"),...nos.map(n=>m.has(n)?m.get(n).score:""),r.items.filter(i=>i.said).map(i=>`${byNo(i.no).hz}→${i.said}`).join(" / ")]});
+    const text="﻿"+[head,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    saveFile("여행회화_수행평가_결과.csv",new Blob([text],{type:"text/csv"}));
+  };
+  zip.onclick=async()=>{
+    if(typeof JSZip==="undefined"){toast("압축 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.");return}
+    zip.disabled=true;zip.textContent="묶는 중…";
+    const z=new JSZip();let n=0;
+    for(const r of all){let k=0;for(const it of r.items){k++;if(!it.audio)continue;const b=await idbGet(`${r.id}:${it.no}`);if(!b)continue;
+      const w=byNo(it.no);z.folder(`${r.cls}반_${r.num}번_${r.name}`).file(`${String(k).padStart(2,"0")}_${w.ch}_${it.score}점.${extOf(b.type||it.type)}`,b);n++}}
+    if(!n){toast("저장된 녹음이 없어요.");zip.disabled=false;zip.textContent="녹음 전체 받기 (zip)";return}
+    const out=await z.generateAsync({type:"blob"});
+    await saveFile("여행회화_수행평가_녹음.zip",out);
+    zip.disabled=false;zip.textContent="녹음 전체 받기 (zip)";
+  };
+}
+async function detail(id){
+  const r=(jget(KEY_LOG)||[]).find(x=>x.id===id);if(!r)return teacher();
+  const blobs=await Promise.all(r.items.map(it=>it.audio?idbGet(`${r.id}:${it.no}`):null));
+  const urls=blobs.map(b=>b?URL.createObjectURL(b):null);
+  app.innerHTML=`<section class="panel">
+    <div class="row"><b style="font-size:1.15rem">${esc(r.cls)}반 ${esc(r.num)}번 ${esc(r.name)}</b><span class="spacer"></span><span class="sc">${r.score} / 15점 (원점수 ${r.raw}/20)</span></div>
+    <p class="count">${MODE_INFO[r.mode].name} · ${r.grade} 채점 · ${fmtTime(r.at)} 제출</p>
+    <ol class="glist">${r.items.map((it,i)=>{const w=byNo(it.no);return `<li>
+      <div class="qn"><span class="num">${i+1}번</span>${chTag(w)}<span class="badge s${it.score}">${it.score}점</span>${it.passed?`<span class="flag pass">패스했던 문장</span>`:""}${it.st==="timeout"?`<span class="flag">시간 초과</span>`:""}</div>
+      <p class="k">${esc(w.kr)}</p><p class="zh">${esc(w.hz)}</p>
+      ${urls[i]?`<div class="row"><audio controls preload="metadata" src="${urls[i]}"></audio><button class="tbtn" data-dl="${i}">파일 저장</button></div>`:`<p class="count">녹음 없음</p>`}
+      ${it.said?`<p class="heardl">인식된 말: <b>${esc(it.said)}</b></p>`:""}</li>`}).join("")}</ol>
+    <div class="row"><span class="spacer"></span><button class="btn primary" id="bk">목록으로</button></div>
+  </section>`;
+  fixDurations(app);
+  app.querySelectorAll("[data-dl]").forEach(b=>b.onclick=()=>{const i=+b.dataset.dl,it=r.items[i];saveFile(`${r.cls}반_${r.num}번_${r.name}_${i+1}번.${extOf(blobs[i].type)}`,blobs[i])});
+  bk.onclick=()=>{urls.forEach(u=>u&&URL.revokeObjectURL(u));teacher()};
+  window.scrollTo(0,0);
+}
+
+entry();
+</script>
+</body>
+</html>
